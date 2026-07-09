@@ -1,0 +1,135 @@
+// Prisma schema for ErrorNest
+// Maps to plan.md Section 2 "Core Entities & Data Shapes"
+
+generator client {
+  provider = "prisma-client-js"
+}
+
+datasource db {
+  provider = "postgresql"
+  url      = env("DATABASE_URL")
+}
+
+enum Role {
+  OWNER
+  ADMIN
+  MEMBER
+  VIEWER
+}
+
+enum ErrorStatus {
+  OPEN
+  RESOLVED
+  IGNORED
+}
+
+enum Severity {
+  INFO
+  WARNING
+  ERROR
+  CRITICAL
+}
+
+model User {
+  id              String          @id @default(cuid())
+  email           String          @unique
+  passwordHash    String
+  name            String?
+  emailVerifiedAt DateTime?
+  createdAt       DateTime        @default(now())
+  updatedAt       DateTime        @updatedAt
+
+  ownedProjects   Project[]       @relation("ProjectOwner")
+  memberships     ProjectMember[]
+
+  @@index([email])
+}
+
+model Project {
+  id        String          @id @default(cuid())
+  name      String
+  slug      String          @unique
+  ownerId   String
+  owner     User            @relation("ProjectOwner", fields: [ownerId], references: [id])
+  createdAt DateTime        @default(now())
+  deletedAt DateTime?
+
+  members     ProjectMember[]
+  apiKeys     ApiKey[]
+  errorGroups ErrorGroup[]
+
+  @@index([ownerId])
+}
+
+model ProjectMember {
+  id        String   @id @default(cuid())
+  projectId String
+  userId    String
+  role      Role     @default(MEMBER)
+  createdAt DateTime @default(now())
+
+  project Project @relation(fields: [projectId], references: [id], onDelete: Cascade)
+  user    User    @relation(fields: [userId], references: [id], onDelete: Cascade)
+
+  @@unique([projectId, userId])
+  @@index([userId])
+}
+
+model ApiKey {
+  id        String    @id @default(cuid())
+  projectId String
+  keyHash   String    @unique
+  label     String    @default("default")
+  createdAt DateTime  @default(now())
+  revokedAt DateTime?
+
+  project Project @relation(fields: [projectId], references: [id], onDelete: Cascade)
+
+  @@index([projectId])
+}
+
+model ErrorGroup {
+  id              String      @id @default(cuid())
+  projectId       String
+  fingerprint     String
+  title           String
+  status          ErrorStatus @default(OPEN)
+  severity        Severity    @default(ERROR)
+  occurrenceCount Int         @default(0)
+  firstSeenAt     DateTime    @default(now())
+  lastSeenAt      DateTime    @default(now())
+
+  project        Project         @relation(fields: [projectId], references: [id], onDelete: Cascade)
+  events         ErrorEvent[]
+  notifications  Notification[]
+
+  @@unique([projectId, fingerprint])
+  @@index([projectId, status, lastSeenAt])
+}
+
+model ErrorEvent {
+  id           String   @id @default(cuid())
+  errorGroupId String
+  message      String
+  stackTrace   String?
+  browser      String?
+  url          String?
+  userContext  Json?
+  createdAt    DateTime @default(now())
+
+  errorGroup ErrorGroup @relation(fields: [errorGroupId], references: [id], onDelete: Cascade)
+
+  @@index([errorGroupId, createdAt])
+}
+
+model Notification {
+  id           String   @id @default(cuid())
+  projectId    String
+  errorGroupId String
+  channel      String   @default("EMAIL")
+  sentAt       DateTime @default(now())
+
+  errorGroup ErrorGroup @relation(fields: [errorGroupId], references: [id], onDelete: Cascade)
+
+  @@index([projectId])
+}
