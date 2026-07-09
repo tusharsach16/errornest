@@ -45,7 +45,7 @@ export function LoginForm() {
       if (result?.error) {
         setFormError("Incorrect email or password.");
       } else {
-        window.location.href = "/dashboard";
+        window.location.href = "/projects";
       }
     });
   }
