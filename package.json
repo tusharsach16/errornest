@@ -27,6 +27,9 @@
     "zod": "^3.23.8"
   },
   "devDependencies": {
+    "@emnapi/core": "^1.11.2",
+    "@emnapi/runtime": "^1.11.2",
+    "@emnapi/wasi-threads": "^1.2.2",
     "@playwright/test": "^1.47.0",
     "@types/bcryptjs": "^2.4.6",
     "@types/node": "^20.14.0",
