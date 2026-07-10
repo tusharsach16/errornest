@@ -6,7 +6,7 @@
 
 <!-- !\\\[Hero screenshot](docs/screenshots/hero.png) -->
 
-**Live demo → https://your-app.vercel.app** *(add once deployed)*
+**Live demo → https://errornest.vercel.app** *(add once deployed)*
 
 > Built as part of the Digital Heroes Full Stack Developer Trial.
 
@@ -68,7 +68,7 @@ npm run test:e2e   # playwright
 - [x] Error dashboard with search/filter/pagination
 - [x] Error detail view with occurrence history
 - [x] Resolve/ignore/reopen actions with optimistic UI
-- [ ] Dashboard charts
+- [x] Dashboard charts (14-day error volume)
 - [ ] Slack notifier (swap-in via `INotifier`)
 - [ ] Saved search views
 
