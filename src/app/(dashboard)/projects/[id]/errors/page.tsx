@@ -76,6 +76,14 @@ export default async function ErrorsPage({ params, searchParams }: Props) {
         >
           Errors
         </span>
+        {(role === "OWNER" || role === "ADMIN") && (
+          <Link
+            href={`/projects/${params.id}/team`}
+            className="border-b-2 border-transparent px-4 py-2 text-sm font-medium text-gray-500 transition-colors duration-[150ms] hover:text-gray-900"
+          >
+            Team
+          </Link>
+        )}
       </nav>
 
       <h1 className="text-2xl font-semibold tracking-tight text-gray-900">

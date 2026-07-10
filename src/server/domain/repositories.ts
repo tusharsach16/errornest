@@ -7,6 +7,15 @@ import type {
   Role,
 } from "./entities";
 
+export interface MemberWithUser {
+  id: string;
+  projectId: string;
+  userId: string;
+  role: Role;
+  userName: string | null;
+  userEmail: string;
+}
+
 /**
  * Each interface is scoped to one entity (Interface Segregation) so a
  * service only depends on the slice it actually needs. Concrete
@@ -26,8 +35,10 @@ export interface IProjectRepository {
 export interface IProjectMemberRepository {
   add(projectId: string, userId: string, role: Role): Promise<ProjectMember>;
   updateRole(projectId: string, userId: string, role: Role): Promise<ProjectMember>;
+  remove(projectId: string, userId: string): Promise<void>;
   getRole(projectId: string, userId: string): Promise<Role | null>;
   list(projectId: string): Promise<ProjectMember[]>;
+  listWithUserDetails(projectId: string): Promise<MemberWithUser[]>;
 }
 
 export interface IErrorRepository {

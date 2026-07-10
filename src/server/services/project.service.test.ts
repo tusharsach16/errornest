@@ -36,8 +36,10 @@ function makeMemberRepo(overrides: Partial<IProjectMemberRepository> = {}): IPro
       role: "OWNER",
     } satisfies ProjectMember),
     updateRole: vi.fn().mockResolvedValue({ id: "member-1", projectId: "proj-1", userId: "user-1", role: "ADMIN" }),
+    remove: vi.fn().mockResolvedValue(undefined),
     getRole: vi.fn().mockResolvedValue("OWNER"),
     list: vi.fn().mockResolvedValue([]),
+    listWithUserDetails: vi.fn().mockResolvedValue([]),
     ...overrides,
   };
 }

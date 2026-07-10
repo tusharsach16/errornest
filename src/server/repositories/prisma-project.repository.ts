@@ -1,5 +1,6 @@
 import { db } from "@/lib/db";
 import type { IProjectRepository, IProjectMemberRepository } from "../domain/repositories";
+import type { MemberWithUser } from "../domain/repositories";
 import type { Role } from "../domain/entities";
 
 export class PrismaProjectRepository implements IProjectRepository {
@@ -51,5 +52,27 @@ export class PrismaProjectMemberRepository implements IProjectMemberRepository {
 
   async list(projectId: string) {
     return db.projectMember.findMany({ where: { projectId } });
+  }
+
+  async remove(projectId: string, userId: string): Promise<void> {
+    await db.projectMember.delete({
+      where: { projectId_userId: { projectId, userId } },
+    });
+  }
+
+  async listWithUserDetails(projectId: string): Promise<MemberWithUser[]> {
+    const rows = await db.projectMember.findMany({
+      where: { projectId },
+      include: { user: { select: { name: true, email: true } } },
+      orderBy: { createdAt: "asc" },
+    });
+    return rows.map((r) => ({
+      id: r.id,
+      projectId: r.projectId,
+      userId: r.userId,
+      role: r.role as Role,
+      userName: r.user.name,
+      userEmail: r.user.email,
+    }));
   }
 }

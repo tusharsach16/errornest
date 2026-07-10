@@ -11,6 +11,7 @@ import { OverviewChart } from "./OverviewChart";
 
 interface Props {
   params: { id: string };
+  searchParams: Record<string, string | string[] | undefined>;
 }
 
 export async function generateMetadata({ params }: Props): Promise<Metadata> {
@@ -23,7 +24,7 @@ export async function generateMetadata({ params }: Props): Promise<Metadata> {
   };
 }
 
-export default async function ProjectOverviewPage({ params }: Props) {
+export default async function ProjectOverviewPage({ params, searchParams }: Props) {
   const userId = await getServerUserId();
   if (!userId) redirect("/login");
 
@@ -62,7 +63,21 @@ export default async function ProjectOverviewPage({ params }: Props) {
         >
           Errors
         </Link>
+        {(role === "OWNER" || role === "ADMIN") && (
+          <Link
+            href={`/projects/${params.id}/team`}
+            className="border-b-2 border-transparent px-4 py-2 text-sm font-medium text-gray-500 transition-colors duration-[150ms] hover:text-gray-900"
+          >
+            Team
+          </Link>
+        )}
       </nav>
+
+      {searchParams.message === "access-denied" && (
+        <div role="alert" className="mb-6 rounded-input border border-amber-200 bg-amber-50 px-4 py-3 text-sm text-amber-800">
+          You need to be an Admin or Owner to access the Team page.
+        </div>
+      )}
 
       <h1 className="text-2xl font-semibold tracking-tight text-gray-900">
         {project.name}
