@@ -4,7 +4,7 @@
 > errors here, get grouped, searchable, real-time-ish visibility instead of
 > waiting for users to complain.
 
-<!-- !\[Hero screenshot](docs/screenshots/hero.png) -->
+<!-- !\\\[Hero screenshot](docs/screenshots/hero.png) -->
 
 **Live demo → https://your-app.vercel.app** *(add once deployed)*
 
@@ -28,10 +28,10 @@ CSS · Auth.js · Recharts · Vercel
 ## Quick Start
 
 ```bash
-git clone https://github.com/you/errornest \&\& cd errornest
+git clone https://github.com/you/errornest \\\&\\\& cd errornest
 cp .env.example .env   # then fill in values
 npm install
-npm run db:migrate \&\& npm run db:seed
+npm run db:migrate \\\&\\\& npm run db:seed
 npm run dev             # http://localhost:3000
 ```
 
@@ -39,11 +39,11 @@ npm run dev             # http://localhost:3000
 
 |Variable|Description|
 |-|-|
-|`DATABASE\_URL`|Postgres connection string|
-|`AUTH\_SECRET`|Session signing secret (`openssl rand -base64 32`)|
-|`NEXTAUTH\_URL`|Base URL for Auth.js callbacks|
-|`RESEND\_API\_KEY`|Email provider key for critical-error alerts|
-|`EMAIL\_FROM`|Sender address for alert emails|
+|`DATABASE\\\_URL`|Postgres connection string|
+|`AUTH\\\_SECRET`|Session signing secret (`openssl rand -base64 32`)|
+|`NEXTAUTH\\\_URL`|Base URL for Auth.js callbacks|
+|`RESEND\\\_API\\\_KEY`|Email provider key for critical-error alerts|
+|`EMAIL\\\_FROM`|Sender address for alert emails|
 
 ## Architecture
 
@@ -65,6 +65,7 @@ npm run test:e2e   # playwright
 * \[x] RBAC + project scaffolding
 * \[x] Auth (signup/login)
 * \[x] Project creation + API key generation
+* \[x] Error dashboard with search/filter/pagination
 * \[ ] Dashboard charts
 * \[ ] Slack notifier (swap-in via `INotifier`)
 * \[ ] Saved search views
