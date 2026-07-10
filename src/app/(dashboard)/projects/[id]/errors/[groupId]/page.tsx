@@ -1,4 +1,4 @@
-﻿import type { Metadata } from "next";
+import type { Metadata } from "next";
 import Link from "next/link";
 import { notFound, redirect } from "next/navigation";
 import { getServerUserId } from "@/lib/session";
@@ -9,6 +9,7 @@ import {
 import { PrismaErrorRepository } from "@/server/repositories/prisma-error.repository";
 import { db } from "@/lib/db";
 import { ErrorDetailClient } from "./ErrorDetailClient";
+import { ErrorGroupHeader } from "./ErrorGroupHeader";
 import type { SerializableErrorEvent } from "./actions";
 
 interface Props {
@@ -62,22 +63,6 @@ export default async function ErrorDetailPage({ params }: Props) {
     createdAt: e.createdAt.toISOString(),
   }));
 
-  const severityClasses: Record<string, string> = {
-    INFO: "bg-blue-50 text-blue-700 ring-1 ring-blue-200",
-    WARNING: "bg-amber-50 text-amber-700 ring-1 ring-amber-200",
-    ERROR: "bg-red-50 text-red-700 ring-1 ring-red-200",
-    CRITICAL: "bg-red-100 text-red-800 ring-1 ring-red-300 font-semibold",
-  };
-
-  const statusClasses: Record<string, string> = {
-    OPEN: "bg-red-50 text-red-700 ring-1 ring-red-200",
-    RESOLVED: "bg-green-50 text-green-700 ring-1 ring-green-200",
-    IGNORED: "bg-gray-100 text-gray-500 ring-1 ring-gray-200",
-  };
-
-  const statusLabel =
-    group.status.charAt(0) + group.status.slice(1).toLowerCase();
-
   return (
     <main className="mx-auto max-w-[1280px] px-6 py-12">
       <nav aria-label="Breadcrumb" className="mb-6">
@@ -105,18 +90,12 @@ export default async function ErrorDetailPage({ params }: Props) {
         {group.title}
       </h1>
 
-      <div className="mt-4 flex flex-wrap items-center gap-3">
-        <span
-          className={`inline-block rounded-pill px-2.5 py-0.5 text-xs ${severityClasses[group.severity]}`}
-        >
-          {group.severity}
-        </span>
-        <span
-          className={`inline-block rounded-pill px-2.5 py-0.5 text-xs ${statusClasses[group.status]}`}
-        >
-          {statusLabel}
-        </span>
-      </div>
+      <ErrorGroupHeader
+        projectId={params.id}
+        groupId={params.groupId}
+        severity={group.severity as "INFO" | "WARNING" | "ERROR" | "CRITICAL"}
+        initialStatus={group.status as "OPEN" | "RESOLVED" | "IGNORED"}
+      />
 
       <dl className="mt-6 flex flex-wrap gap-x-8 gap-y-4 text-sm">
         <div>
