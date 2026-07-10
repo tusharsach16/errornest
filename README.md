@@ -6,7 +6,7 @@
 
 <!-- !\\\[Hero screenshot](docs/screenshots/hero.png) -->
 
-**Live demo → https://errornest.vercel.app** *(add once deployed)*
+**Live demo → https://errornest.vercel.app**
 
 > Built as part of the Digital Heroes Full Stack Developer Trial.
 
