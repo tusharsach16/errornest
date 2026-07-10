@@ -4,6 +4,7 @@
   "private": true,
   "description": "A lightweight, self-hosted error monitoring platform.",
   "scripts": {
+    "postinstall": "prisma generate",
     "dev": "next dev",
     "build": "next build",
     "start": "next start",
