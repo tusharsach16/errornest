@@ -101,4 +101,33 @@ export class PrismaErrorRepository implements IErrorRepository {
   async updateStatus(groupId: string, status: "OPEN" | "RESOLVED" | "IGNORED") {
     return db.errorGroup.update({ where: { id: groupId }, data: { status } });
   }
+
+  async getDailyEventCounts(projectId: string, days: number): Promise<{ date: string; count: number }[]> {
+    const since = new Date();
+    since.setUTCHours(0, 0, 0, 0);
+    since.setUTCDate(since.getUTCDate() - (days - 1));
+
+    const rows = await db.$queryRaw<{ day: Date; count: bigint }[]>`
+      SELECT date_trunc('day', ee."createdAt") AS day,
+             COUNT(*)::bigint                  AS count
+      FROM   "ErrorEvent"  ee
+      JOIN   "ErrorGroup"  eg ON eg.id = ee."errorGroupId"
+      WHERE  eg."projectId" = ${projectId}
+        AND  ee."createdAt" >= ${since}
+      GROUP  BY 1
+      ORDER  BY 1 ASC
+    `;
+
+    const byDay = new Map(
+      rows.map((r) => [r.day.toISOString().slice(0, 10), Number(r.count)]),
+    );
+
+    // Produce a zero-filled array for every day in the window.
+    return Array.from({ length: days }, (_, i) => {
+      const d = new Date(since);
+      d.setUTCDate(d.getUTCDate() + i);
+      const key = d.toISOString().slice(0, 10);
+      return { date: key, count: byDay.get(key) ?? 0 };
+    });
+  }
 }
