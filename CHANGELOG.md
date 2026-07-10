@@ -17,6 +17,8 @@ Format follows [Keep a Changelog](https://keepachangelog.com/en/1.1.0/).
 - Error detail view showing individual occurrences with expandable stack traces and cursor pagination.
 - Resolve/ignore/reopen status actions on error dashboard and detail view with optimistic UI, RBAC enforcement, and toast notifications.
 - Project overview page with 14-day error volume chart and top-5 error groups list.
+- Team management page with role-based invite, role change, and member removal, enforcing RBAC server-side.
+
 
 
 <!--

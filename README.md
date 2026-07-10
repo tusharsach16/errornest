@@ -69,6 +69,7 @@ npm run test:e2e   # playwright
 - [x] Error detail view with occurrence history
 - [x] Resolve/ignore/reopen actions with optimistic UI
 - [x] Dashboard charts (14-day error volume)
+- [x] Team invite + role management (RBAC-enforced)
 - [ ] Slack notifier (swap-in via `INotifier`)
 - [ ] Saved search views
 
