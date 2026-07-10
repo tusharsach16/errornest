@@ -404,7 +404,7 @@ function EmptyNoErrors({ projectName }: { projectName: string }) {
         No errors captured yet for {projectName}
       </p>
       <p className="mx-auto mt-2 max-w-sm text-sm text-indigo-700">
-        Send your first error using your API key. Here's a quick curl example:
+        Send your first error using your API key. Here&apos;s a quick curl example:
       </p>
 
       <div className="relative mx-auto mt-6 max-w-xl text-left">
