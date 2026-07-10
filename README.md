@@ -67,6 +67,7 @@ npm run test:e2e   # playwright
 - [x] Project creation + API key generation
 - [x] Error dashboard with search/filter/pagination
 - [x] Error detail view with occurrence history
+- [x] Resolve/ignore/reopen actions with optimistic UI
 - [ ] Dashboard charts
 - [ ] Slack notifier (swap-in via `INotifier`)
 - [ ] Saved search views

@@ -15,6 +15,7 @@ Format follows [Keep a Changelog](https://keepachangelog.com/en/1.1.0/).
 - Project creation flow with API key generation.
 - Error dashboard with search, status/severity filters, URL-synced state, and cursor pagination.
 - Error detail view showing individual occurrences with expandable stack traces and cursor pagination.
+- Resolve/ignore/reopen status actions on error dashboard and detail view with optimistic UI, RBAC enforcement, and toast notifications.
 
 <!--
 ## [1.0.0] - YYYY-MM-DD
