@@ -38,7 +38,7 @@ export default async function ProjectsPage() {
           {projects.map((project) => (
             <li key={project.id}>
               <Link
-                href={`/projects/${project.id}/errors`}
+                href={`/projects/${project.id}`}
                 className="block rounded-card border border-gray-200 bg-white p-6 transition-shadow duration-[150ms] hover:shadow-md"
               >
                 <p className="text-base font-semibold text-gray-900">{project.name}</p>
