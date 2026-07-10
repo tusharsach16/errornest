@@ -3,8 +3,10 @@
 import { useCallback, useEffect, useRef, useState, useTransition } from "react";
 import { useRouter, useSearchParams } from "next/navigation";
 import Link from "next/link";
-import { listErrorGroupsAction } from "./actions";
-import type { SerializableErrorGroup } from "./actions";
+import { listErrorGroupsAction, updateErrorStatusAction } from "./actions";
+import type { SerializableErrorGroup, ErrorStatus } from "./actions";
+import { Toast } from "@/components/Toast";
+import type { ToastState } from "@/components/Toast";
 
 // ─── Types ────────────────────────────────────────────────────────────────────
 
@@ -30,6 +32,8 @@ interface Props {
   initialFilters: Filters;
 }
 
+type ToastCallback = (t: ToastState) => void;
+
 
 export function ErrorsClient({
   projectId,
@@ -47,6 +51,15 @@ export function ErrorsClient({
   const [nextCursor, setNextCursor] = useState<string | null>(initialNextCursor);
   const [pageState, setPageState] = useState<PageState>("success");
   const [isLoadingMore, setIsLoadingMore] = useState(false);
+  const [toast, setToast] = useState<ToastState | null>(null);
+
+  const dismissToast = useCallback(() => setToast(null), []);
+
+  const handleRowStatusChange = useCallback((groupId: string, next: ErrorStatus) => {
+    setItems((prev) =>
+      prev.map((g) => (g.id === groupId ? { ...g, status: next } : g)),
+    );
+  }, []);
 
   const debounceRef = useRef<ReturnType<typeof setTimeout> | null>(null);
   // Track whether this is the very first render to skip a redundant fetch.
@@ -255,11 +268,23 @@ export function ErrorsClient({
                   >
                     Status
                   </th>
+                  <th
+                    scope="col"
+                    className="px-4 py-3 text-left font-semibold text-gray-600"
+                  >
+                    Actions
+                  </th>
                 </tr>
               </thead>
               <tbody className="divide-y divide-gray-100 bg-white">
                 {items.map((group) => (
-                  <ErrorTableRow key={group.id} group={group} projectId={projectId} />
+                  <ErrorTableRow
+                    key={group.id}
+                    group={group}
+                    projectId={projectId}
+                    onStatusChange={handleRowStatusChange}
+                    onToast={setToast}
+                  />
                 ))}
               </tbody>
             </table>
@@ -281,6 +306,8 @@ export function ErrorsClient({
           )}
         </>
       )}
+
+      {toast && <Toast message={toast.message} variant={toast.variant} onDismiss={dismissToast} />}
     </div>
   );
 }
@@ -290,11 +317,38 @@ export function ErrorsClient({
 function ErrorTableRow({
   group,
   projectId,
+  onStatusChange,
+  onToast,
 }: {
   group: SerializableErrorGroup;
   projectId: string;
+  onStatusChange: (groupId: string, next: ErrorStatus) => void;
+  onToast: ToastCallback;
 }) {
   const href = `/projects/${projectId}/errors/${group.id}`;
+  const [status, setStatus] = useState<ErrorStatus>(group.status);
+  const [isPending, setIsPending] = useState(false);
+
+  const handleAction = async (next: ErrorStatus) => {
+    const prev = status;
+    setStatus(next);
+    onStatusChange(group.id, next);
+    setIsPending(true);
+
+    const result = await updateErrorStatusAction(projectId, group.id, next);
+    setIsPending(false);
+
+    if (!result.ok) {
+      setStatus(prev);
+      onStatusChange(group.id, prev);
+      onToast({ message: result.error, variant: "error" });
+      return;
+    }
+
+    const label = next === "OPEN" ? "reopened" : next === "RESOLVED" ? "resolved" : "ignored";
+    onToast({ message: `Marked as ${label}`, variant: "success" });
+  };
+
   return (
     <tr className="relative transition-colors duration-[150ms] hover:bg-gray-50">
       <td className="max-w-[360px] px-4 py-3">
@@ -316,7 +370,20 @@ function ErrorTableRow({
         {relativeTime(group.lastSeenAt)}
       </td>
       <td className="px-4 py-3">
-        <StatusBadge status={group.status} />
+        <StatusBadge status={status} />
+      </td>
+      {/* z-10 lifts buttons above the <Link> after:inset-0 overlay */}
+      <td className="relative z-10 px-4 py-3">
+        <div className="flex items-center gap-2" role="group" aria-label={`Actions for ${group.title}`}>
+          {status === "OPEN" ? (
+            <>
+              <RowActionButton label="Resolve" isPending={isPending} onClick={() => handleAction("RESOLVED")} colorClass="text-green-700 border-green-300 hover:bg-green-50 active:bg-green-100 focus-visible:ring-green-500/40" />
+              <RowActionButton label="Ignore" isPending={isPending} onClick={() => handleAction("IGNORED")} colorClass="text-gray-600 border-gray-300 hover:bg-gray-50 active:bg-gray-100 focus-visible:ring-gray-400/40" />
+            </>
+          ) : (
+            <RowActionButton label="Reopen" isPending={isPending} onClick={() => handleAction("OPEN")} colorClass="text-indigo-700 border-indigo-300 hover:bg-indigo-50 active:bg-indigo-100 focus-visible:ring-indigo-600/30" />
+          )}
+        </div>
       </td>
     </tr>
   );
@@ -345,6 +412,42 @@ const STATUS_CLASSES: Record<SerializableErrorGroup["status"], string> = {
   IGNORED: "bg-gray-100 text-gray-500 ring-1 ring-gray-200",
 };
 
+function RowActionButton({
+  label,
+  isPending,
+  onClick,
+  colorClass,
+}: {
+  label: string;
+  isPending: boolean;
+  onClick: () => void;
+  colorClass: string;
+}) {
+  return (
+    <button
+      type="button"
+      onClick={onClick}
+      disabled={isPending}
+      aria-disabled={isPending}
+      aria-busy={isPending}
+      style={{ minHeight: "44px" }}
+      className={`inline-flex items-center gap-1 rounded border bg-white px-2.5 py-1 text-xs font-semibold transition-colors duration-[150ms] focus:outline-none focus-visible:ring-2 disabled:cursor-not-allowed disabled:opacity-50 ${colorClass}`}
+    >
+      {isPending && <MiniSpinner />}
+      {label}
+    </button>
+  );
+}
+
+function MiniSpinner() {
+  return (
+    <svg aria-hidden="true" className="h-3 w-3 animate-spin" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth={2}>
+      <path strokeLinecap="round" strokeLinejoin="round" d="M12 3a9 9 0 0 1 9 9" className="opacity-25" />
+      <circle cx="12" cy="12" r="9" strokeOpacity={0.25} />
+    </svg>
+  );
+}
+
 function StatusBadge({ status }: { status: SerializableErrorGroup["status"] }) {
   const label = status.charAt(0) + status.slice(1).toLowerCase();
   return (
@@ -367,6 +470,7 @@ function SkeletonRows() {
             <th className="px-4 py-3 text-right font-semibold text-gray-600">Occurrences</th>
             <th className="px-4 py-3 text-left font-semibold text-gray-600">Last seen</th>
             <th className="px-4 py-3 text-left font-semibold text-gray-600">Status</th>
+            <th className="px-4 py-3 text-left font-semibold text-gray-600">Actions</th>
           </tr>
         </thead>
         <tbody className="divide-y divide-gray-100 bg-white">
@@ -386,6 +490,9 @@ function SkeletonRows() {
               </td>
               <td className="px-4 py-3">
                 <div className="h-5 w-16 rounded-pill bg-gray-200" />
+              </td>
+              <td className="px-4 py-3">
+                <div className="h-5 w-28 rounded bg-gray-200" />
               </td>
             </tr>
           ))}
