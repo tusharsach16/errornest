@@ -61,14 +61,15 @@ npm run test:e2e   # playwright
 
 ## Roadmap
 
-* \[x] Ingestion API + fingerprint grouping
-* \[x] RBAC + project scaffolding
-* \[x] Auth (signup/login)
-* \[x] Project creation + API key generation
-* \[x] Error dashboard with search/filter/pagination
-* \[ ] Dashboard charts
-* \[ ] Slack notifier (swap-in via `INotifier`)
-* \[ ] Saved search views
+- [x] Ingestion API + fingerprint grouping
+- [x] RBAC + project scaffolding
+- [x] Auth (signup/login)
+- [x] Project creation + API key generation
+- [x] Error dashboard with search/filter/pagination
+- [x] Error detail view with occurrence history
+- [ ] Dashboard charts
+- [ ] Slack notifier (swap-in via `INotifier`)
+- [ ] Saved search views
 
 ## Screenshots
 
