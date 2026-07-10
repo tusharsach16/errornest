@@ -2,6 +2,7 @@
 
 import { useCallback, useEffect, useRef, useState, useTransition } from "react";
 import { useRouter, useSearchParams } from "next/navigation";
+import Link from "next/link";
 import { listErrorGroupsAction } from "./actions";
 import type { SerializableErrorGroup } from "./actions";
 
@@ -28,6 +29,7 @@ interface Props {
   initialNextCursor: string | null;
   initialFilters: Filters;
 }
+
 
 export function ErrorsClient({
   projectId,
@@ -257,7 +259,7 @@ export function ErrorsClient({
               </thead>
               <tbody className="divide-y divide-gray-100 bg-white">
                 {items.map((group) => (
-                  <ErrorTableRow key={group.id} group={group} />
+                  <ErrorTableRow key={group.id} group={group} projectId={projectId} />
                 ))}
               </tbody>
             </table>
@@ -285,16 +287,24 @@ export function ErrorsClient({
 
 // ─── Sub-components ───────────────────────────────────────────────────────────
 
-function ErrorTableRow({ group }: { group: SerializableErrorGroup }) {
+function ErrorTableRow({
+  group,
+  projectId,
+}: {
+  group: SerializableErrorGroup;
+  projectId: string;
+}) {
+  const href = `/projects/${projectId}/errors/${group.id}`;
   return (
-    <tr className="transition-colors duration-[150ms] hover:bg-gray-50">
+    <tr className="relative transition-colors duration-[150ms] hover:bg-gray-50">
       <td className="max-w-[360px] px-4 py-3">
-        <span
-          className="block truncate font-medium text-gray-900"
+        <Link
+          href={href}
+          className="block truncate font-medium text-gray-900 after:absolute after:inset-0 focus:outline-none focus-visible:ring-2 focus-visible:ring-inset focus-visible:ring-indigo-600/40"
           title={group.title}
         >
           {group.title}
-        </span>
+        </Link>
       </td>
       <td className="px-4 py-3">
         <SeverityBadge severity={group.severity} />
