@@ -1,4 +1,5 @@
 import type { Metadata } from "next";
+import Link from "next/link";
 import { notFound, redirect } from "next/navigation";
 import { getServerUserId } from "@/lib/session";
 import {
@@ -62,6 +63,21 @@ export default async function ErrorsPage({ params, searchParams }: Props) {
 
   return (
     <main className="mx-auto max-w-[1280px] px-6 py-12">
+      <nav aria-label="Project navigation" className="mb-6 flex gap-1 border-b border-gray-200">
+        <Link
+          href={`/projects/${params.id}`}
+          className="border-b-2 border-transparent px-4 py-2 text-sm font-medium text-gray-500 transition-colors duration-[150ms] hover:text-gray-900"
+        >
+          Overview
+        </Link>
+        <span
+          className="border-b-2 border-indigo-600 px-4 py-2 text-sm font-semibold text-indigo-600"
+          aria-current="page"
+        >
+          Errors
+        </span>
+      </nav>
+
       <h1 className="text-2xl font-semibold tracking-tight text-gray-900">
         {project.name} — Errors
       </h1>

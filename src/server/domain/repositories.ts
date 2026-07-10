@@ -44,6 +44,7 @@ export interface IErrorRepository {
   listGroups(projectId: string, filters: ErrorGroupFilters): Promise<{ items: ErrorGroup[]; nextCursor: string | null }>;
   listEvents(groupId: string, cursor?: string, limit?: number): Promise<{ items: ErrorEvent[]; nextCursor: string | null }>;
   updateStatus(groupId: string, status: ErrorGroup["status"]): Promise<ErrorGroup>;
+  getDailyEventCounts(projectId: string, days: number): Promise<{ date: string; count: number }[]>;
 }
 
 export interface IApiKeyRepository {
