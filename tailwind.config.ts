@@ -37,7 +37,11 @@ const config: Config = {
       },
       fontFamily: {
         sans: ["var(--font-inter)", "sans-serif"],
-        mono: ["var(--font-geist-mono)", "monospace"],
+        mono: ["var(--font-jetbrains-mono)", "var(--font-geist-mono)", "monospace"],
+      },
+      colors: {
+        ink: "var(--color-ink)",   /* #1E1B4B deep indigo-ink for headings */
+        page: "var(--color-page)", /* #F8F8FC off-white page background */
       },
     },
   },
