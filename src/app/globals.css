@@ -3,11 +3,137 @@
 @tailwind utilities;
 
 :root {
-  --accent: 79 70 229; /* indigo-600, single accent color per design spec */
+  --accent: 24 24 27;        /* zinc-900 — single accent, used for focus rings */
+  --color-ink:  #18181B;     /* zinc-900/slate-900 for dark headings            */
+  --color-page: #FDFDFD;     /* pure minimalist white background                 */
+}
+
+.dark {
+  --accent: 244 244 245;     /* zinc-100 for dark mode focus rings              */
+  --color-ink:  #F4F4F5;     /* zinc-100 for white headings in dark mode        */
+  --color-page: #09090B;     /* zinc-950 for black background in dark mode       */
 }
 
 /* Visible focus ring on every interactive control, never removed */
 :focus-visible {
   outline: 2px solid rgb(var(--accent));
   outline-offset: 2px;
+}
+
+/* ── Hero entrance animation ── */
+@keyframes heroFadeUp {
+  from { opacity: 0; transform: translateY(16px); }
+  to   { opacity: 1; transform: translateY(0);    }
+}
+
+.animate-hero         { animation: heroFadeUp 250ms ease-out both; }
+.animate-hero-delay   { animation: heroFadeUp 250ms ease-out 150ms both; }
+.animate-hero-delay-2 { animation: heroFadeUp 250ms ease-out 280ms both; }
+
+/* ── Dashboard card float ── */
+@keyframes floatCard {
+  0%, 100% { transform: translateY(0px);  }
+  50%       { transform: translateY(-10px); }
+}
+
+.animate-float {
+  animation: floatCard 5s ease-in-out infinite;
+  will-change: transform;
+}
+
+/* ── Dashboard row slide-in ── */
+@keyframes slideInRow {
+  from { opacity: 0; transform: translateX(-8px); }
+  to   { opacity: 1; transform: translateX(0);     }
+}
+
+/* ── LIVE dot pulse ── */
+@keyframes livePulse {
+  0%, 100% { opacity: 1;   }
+  50%       { opacity: 0.2; }
+}
+
+.live-dot {
+  animation: livePulse 1.4s ease-in-out infinite;
+}
+
+/* ── Dashboard loading dots ── */
+@keyframes loadingDot {
+  0%, 100% { opacity: 0.15; transform: translateY(0);    }
+  50%       { opacity: 0.9;  transform: translateY(-3px); }
+}
+
+/* ── Subtle hero background dot grid ── */
+.hero-dot-grid {
+  background-image: radial-gradient(
+    circle at 1px 1px,
+    rgb(24 24 27 / 0.05) 1.5px,
+    transparent 0
+  );
+  background-size: 28px 28px;
+}
+
+.dark .hero-dot-grid {
+  background-image: radial-gradient(
+    circle at 1px 1px,
+    rgb(244 244 245 / 0.04) 1.5px,
+    transparent 0
+  );
+}
+
+/* ── Terminal badge fade-in (kept for backward compat) ── */
+@keyframes badgeFadeIn {
+  from { opacity: 0; transform: translateY(4px); }
+  to   { opacity: 1; transform: translateY(0);   }
+}
+
+.animate-badge-in { animation: badgeFadeIn 200ms ease-out both; }
+
+/* ── Cursor blink (kept for AnimatedTerminal if still used) ── */
+@keyframes cursorBlink {
+  0%, 100% { opacity: 1; }
+  50%       { opacity: 0; }
+}
+
+.cursor-blink {
+  display: inline-block;
+  width: 2px;
+  height: 0.85em;
+  background: currentColor;
+  vertical-align: text-bottom;
+  margin-left: 1px;
+  animation: cursorBlink 700ms step-end infinite;
+}
+
+/* ── Stat strip counter ── */
+@keyframes countUp {
+  from { opacity: 0; transform: translateY(6px); }
+  to   { opacity: 1; transform: translateY(0);   }
+}
+
+.animate-count-up { animation: countUp 400ms ease-out both; }
+
+/* Respect prefers-reduced-motion */
+@media (prefers-reduced-motion: reduce) {
+  .animate-hero,
+  .animate-hero-delay,
+  .animate-hero-delay-2,
+  .animate-badge-in,
+  .animate-count-up {
+    animation: none;
+    opacity: 1;
+    transform: none;
+  }
+
+  .animate-float {
+    animation: none;
+    transform: none;
+  }
+
+  .live-dot { animation: none; }
+
+  .cursor-blink {
+    animation: none;
+    opacity: 0;
+  }
 }
