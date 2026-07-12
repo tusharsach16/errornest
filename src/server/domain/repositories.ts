@@ -5,6 +5,7 @@ import type {
   ErrorEvent,
   ErrorGroupFilters,
   Role,
+  Severity,
 } from "./entities";
 
 export interface MemberWithUser {
@@ -56,6 +57,13 @@ export interface IErrorRepository {
   listEvents(groupId: string, cursor?: string, limit?: number): Promise<{ items: ErrorEvent[]; nextCursor: string | null }>;
   updateStatus(groupId: string, status: ErrorGroup["status"]): Promise<ErrorGroup>;
   getDailyEventCounts(projectId: string, days: number): Promise<{ date: string; count: number }[]>;
+
+  /* ── Aggregate queries for dashboard overview ── */
+  countEventsForUser(userId: string, since: Date): Promise<number>;
+  countGroupsBySeverityForUser(userId: string, severity: Severity, status?: ErrorGroup["status"]): Promise<number>;
+  countResolvedForUser(userId: string, since: Date): Promise<number>;
+  getDailyEventCountsForUser(userId: string, days: number): Promise<{ date: string; count: number }[]>;
+  getProjectSummaries(projectIds: string[]): Promise<Map<string, { errorCount24h: number; worstSeverity: Severity | null; dailyCounts: number[] }>>;
 }
 
 export interface IApiKeyRepository {
