@@ -15,6 +15,8 @@ const config: Config = {
         8: "32px",
         12: "48px",
         16: "64px",
+        "sidebar-expanded": "260px",
+        "sidebar-collapsed": "72px",
       },
       fontSize: {
         xs: ["12px", { lineHeight: "1.5" }],
@@ -42,6 +44,33 @@ const config: Config = {
       colors: {
         ink: "var(--color-ink)",   /* #1E1B4B deep indigo-ink for headings */
         page: "var(--color-page)", /* #F8F8FC off-white page background */
+      },
+      backdropBlur: {
+        glass: "20px",
+      },
+      keyframes: {
+        "glow-pulse": {
+          "0%, 100%": { boxShadow: "0 0 8px 0 rgba(99,102,241,0.15)" },
+          "50%": { boxShadow: "0 0 20px 4px rgba(99,102,241,0.25)" },
+        },
+        shimmer: {
+          "0%": { backgroundPosition: "-200% 0" },
+          "100%": { backgroundPosition: "200% 0" },
+        },
+        "scale-in": {
+          "0%": { opacity: "0", transform: "scale(0.95)" },
+          "100%": { opacity: "1", transform: "scale(1)" },
+        },
+        "fade-in": {
+          "0%": { opacity: "0" },
+          "100%": { opacity: "1" },
+        },
+      },
+      animation: {
+        "glow-pulse": "glow-pulse 2s ease-in-out infinite",
+        shimmer: "shimmer 1.5s ease-in-out infinite",
+        "scale-in": "scale-in 200ms ease-out",
+        "fade-in": "fade-in 150ms ease-out",
       },
     },
   },

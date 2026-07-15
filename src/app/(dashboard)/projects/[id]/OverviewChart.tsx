@@ -29,8 +29,8 @@ export function OverviewChart({ data }: Props) {
 
   if (isEmpty) {
     return (
-      <div className="flex h-48 items-center justify-center rounded-card border border-dashed border-indigo-200 bg-indigo-50">
-        <p className="text-sm text-indigo-600">No events in the last 14 days</p>
+      <div className="flex h-48 items-center justify-center rounded-card border border-dashed border-zinc-800 bg-zinc-900/10 text-zinc-500">
+        <p className="text-sm font-semibold">No events in the last 14 days</p>
       </div>
     );
   }
@@ -42,27 +42,29 @@ export function OverviewChart({ data }: Props) {
       <AreaChart data={chartData} margin={{ top: 4, right: 4, left: -16, bottom: 0 }}>
         <defs>
           <linearGradient id="errorFill" x1="0" y1="0" x2="0" y2="1">
-            <stop offset="5%" stopColor="#6366f1" stopOpacity={0.25} />
-            <stop offset="95%" stopColor="#6366f1" stopOpacity={0} />
+            <stop offset="5%" stopColor="#a5b4fc" stopOpacity={0.25} />
+            <stop offset="95%" stopColor="#a5b4fc" stopOpacity={0} />
           </linearGradient>
         </defs>
-        <CartesianGrid strokeDasharray="3 3" stroke="#e5e7eb" vertical={false} />
+        <CartesianGrid strokeDasharray="3 3" stroke="#27272a" vertical={false} />
         <XAxis
           dataKey="label"
-          tick={{ fontSize: 12, fill: "#6b7280" }}
+          tick={{ fontSize: 12, fill: "#a1a1aa" }}
           tickLine={false}
           axisLine={false}
         />
         <YAxis
           allowDecimals={false}
-          tick={{ fontSize: 12, fill: "#6b7280" }}
+          tick={{ fontSize: 12, fill: "#a1a1aa" }}
           tickLine={false}
           axisLine={false}
         />
         <Tooltip
           contentStyle={{
             borderRadius: "8px",
-            border: "1px solid #e5e7eb",
+            border: "1px solid #27272a",
+            backgroundColor: "#18181b",
+            color: "#f4f4f5",
             fontSize: "12px",
           }}
           formatter={(value: number) => [value.toLocaleString(), "Events"]}
@@ -71,11 +73,13 @@ export function OverviewChart({ data }: Props) {
         <Area
           type="monotone"
           dataKey="count"
-          stroke="#6366f1"
+          stroke="#a5b4fc"
           strokeWidth={2}
           fill="url(#errorFill)"
           dot={false}
           activeDot={{ r: 4, strokeWidth: 0 }}
+          isAnimationActive={true}
+          animationDuration={400}
         />
       </AreaChart>
     </ResponsiveContainer>

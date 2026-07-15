@@ -50,23 +50,24 @@ export default async function ProjectOverviewPage({ params, searchParams }: Prop
 
   return (
     <main className="mx-auto max-w-[1280px] px-6 py-12">
-      <nav aria-label="Project navigation" className="mb-6 flex gap-1 border-b border-gray-200">
+      {/* ── Tabs ── */}
+      <nav aria-label="Project navigation" className="mb-6 flex gap-1 border-b border-gray-200 dark:border-zinc-800">
         <span
-          className="border-b-2 border-indigo-600 px-4 py-2 text-sm font-semibold text-indigo-600"
+          className="border-b-2 border-indigo-650 dark:border-indigo-500 px-4 py-2 text-sm font-semibold text-indigo-600 dark:text-indigo-400"
           aria-current="page"
         >
           Overview
         </span>
         <Link
           href={`/projects/${params.id}/errors`}
-          className="border-b-2 border-transparent px-4 py-2 text-sm font-medium text-gray-500 transition-colors duration-[150ms] hover:text-gray-900"
+          className="border-b-2 border-transparent px-4 py-2 text-sm font-medium text-zinc-550 dark:text-zinc-400 transition-colors duration-[150ms] hover:text-zinc-900 dark:hover:text-zinc-100"
         >
           Errors
         </Link>
         {(role === "OWNER" || role === "ADMIN") && (
           <Link
             href={`/projects/${params.id}/team`}
-            className="border-b-2 border-transparent px-4 py-2 text-sm font-medium text-gray-500 transition-colors duration-[150ms] hover:text-gray-900"
+            className="border-b-2 border-transparent px-4 py-2 text-sm font-medium text-zinc-550 dark:text-zinc-400 transition-colors duration-[150ms] hover:text-zinc-900 dark:hover:text-zinc-100"
           >
             Team
           </Link>
@@ -74,50 +75,58 @@ export default async function ProjectOverviewPage({ params, searchParams }: Prop
       </nav>
 
       {searchParams.message === "access-denied" && (
-        <div role="alert" className="mb-6 rounded-input border border-amber-200 bg-amber-50 px-4 py-3 text-sm text-amber-800">
+        <div role="alert" className="mb-6 rounded-input border border-amber-250 dark:border-amber-900/50 bg-amber-50 dark:bg-amber-950/20 px-4 py-3 text-sm text-amber-800 dark:text-amber-300">
           You need to be an Admin or Owner to access the Team page.
         </div>
       )}
 
-      <h1 className="text-2xl font-semibold tracking-tight text-gray-900">
-        {project.name}
-      </h1>
+      {/* ── Title Heading ── */}
+      <div className="space-y-1 animate-hero">
+        <span className="font-mono text-[10px] font-bold uppercase tracking-widest text-zinc-500 dark:text-zinc-400">
+          Project Overview
+        </span>
+        <h1 className="text-2xl font-bold tracking-tight text-zinc-900 dark:text-zinc-100 sm:text-3xl">
+          {project.name}
+        </h1>
+      </div>
 
       {hasAnyData ? (
         <div className="mt-8 space-y-8">
-          <section aria-labelledby="chart-heading">
+          {/* ── Chart ── */}
+          <section aria-labelledby="chart-heading" className="animate-hero" style={{ animationDelay: "60ms" }}>
             <h2
               id="chart-heading"
-              className="mb-4 text-base font-semibold text-gray-700"
+              className="mb-4 text-sm font-semibold uppercase tracking-wider text-zinc-500 dark:text-zinc-400"
             >
               Error volume — last 14 days
             </h2>
-            <div className="rounded-card border border-gray-200 bg-white p-6">
+            <div className="relative overflow-hidden rounded-card border border-zinc-800 bg-zinc-950 p-6 pt-8 shadow-xl before:absolute before:top-0 before:left-0 before:right-0 before:h-[3px] before:bg-indigo-500">
               <OverviewChart data={dailyCounts} />
             </div>
           </section>
 
-          <section aria-labelledby="top-groups-heading">
+          {/* ── Top Groups ── */}
+          <section aria-labelledby="top-groups-heading" className="animate-hero" style={{ animationDelay: "120ms" }}>
             <h2
               id="top-groups-heading"
-              className="mb-4 text-base font-semibold text-gray-700"
+              className="mb-4 text-sm font-semibold uppercase tracking-wider text-zinc-500 dark:text-zinc-400"
             >
               Top 5 error groups
             </h2>
-            <ol className="rounded-card border border-gray-200 bg-white divide-y divide-gray-100">
+            <ol className="rounded-card border border-gray-200 dark:border-zinc-800 bg-[#FDFDFD] dark:bg-zinc-900/20 divide-y divide-gray-150 dark:divide-zinc-800/80 shadow-sm overflow-hidden">
               {topGroups.map((group, idx) => (
                 <li key={group.id}>
                   <Link
                     href={`/projects/${params.id}/errors/${group.id}`}
-                    className="flex items-center gap-4 px-6 py-4 transition-colors duration-[150ms] hover:bg-gray-50 focus:outline-none focus-visible:ring-2 focus-visible:ring-inset focus-visible:ring-indigo-600/40"
+                    className="flex items-center gap-4 px-6 py-4 transition-colors duration-[150ms] hover:bg-zinc-50 dark:hover:bg-zinc-800/40 focus:outline-none focus-visible:ring-2 focus-visible:ring-inset focus-visible:ring-indigo-600/40"
                   >
-                    <span className="w-5 shrink-0 text-right text-sm font-semibold tabular-nums text-gray-400">
+                    <span className="flex h-6 w-6 shrink-0 items-center justify-center rounded-[4px] bg-zinc-100 dark:bg-zinc-800 font-mono text-xs font-bold text-zinc-600 dark:text-zinc-400">
                       {idx + 1}
                     </span>
-                    <span className="min-w-0 flex-1 truncate text-sm font-medium text-gray-900">
+                    <span className="min-w-0 flex-1 truncate text-sm font-medium text-zinc-900 dark:text-zinc-100">
                       {group.title}
                     </span>
-                    <span className="shrink-0 text-sm tabular-nums text-gray-500">
+                    <span className="shrink-0 text-sm tabular-nums text-zinc-500 dark:text-zinc-400">
                       {group.occurrenceCount.toLocaleString()} events
                     </span>
                     <SeverityBadge severity={group.severity} />
@@ -141,15 +150,14 @@ function EmptyState({ projectName }: { projectName: string }) {
   -d '{"message":"Test error","severity":"ERROR"}'`;
 
   return (
-    <div className="mt-8 rounded-card border border-dashed border-indigo-200 bg-indigo-50 px-8 py-12 text-center">
-      <p className="text-lg font-semibold text-indigo-900">
+    <div className="mt-8 rounded-card border border-dashed border-zinc-200 dark:border-zinc-800 bg-zinc-50 dark:bg-zinc-900/20 px-8 py-12 text-center max-w-xl mx-auto shadow-sm animate-hero" style={{ animationDelay: "60ms" }}>
+      <p className="text-lg font-bold text-zinc-900 dark:text-zinc-100">
         No errors captured yet for {projectName}
       </p>
-      <p className="mx-auto mt-2 max-w-sm text-sm text-indigo-700">
-        Send your first error using your API key. Here&apos;s a quick curl
-        example:
+      <p className="mx-auto mt-2 max-w-sm text-sm text-zinc-600 dark:text-zinc-400">
+        Send your first error using your API key. Here&apos;s a quick curl example:
       </p>
-      <pre className="mx-auto mt-6 max-w-xl overflow-x-auto rounded-card bg-gray-900 px-4 py-4 text-left font-mono text-xs leading-relaxed text-gray-100">
+      <pre className="mx-auto mt-6 max-w-xl overflow-x-auto rounded-card bg-zinc-950 border border-zinc-800 px-4 py-4 text-left font-mono text-xs leading-relaxed text-zinc-300">
         {snippet}
       </pre>
     </div>
@@ -157,10 +165,10 @@ function EmptyState({ projectName }: { projectName: string }) {
 }
 
 const SEVERITY_CLASSES: Record<string, string> = {
-  INFO: "bg-blue-50 text-blue-700 ring-1 ring-blue-200",
-  WARNING: "bg-amber-50 text-amber-700 ring-1 ring-amber-200",
-  ERROR: "bg-red-50 text-red-700 ring-1 ring-red-200",
-  CRITICAL: "bg-red-100 text-red-800 ring-1 ring-red-300 font-semibold",
+  INFO: "bg-blue-50 text-blue-700 ring-1 ring-blue-200 dark:bg-blue-950/40 dark:text-blue-400 dark:ring-blue-900/50",
+  WARNING: "bg-amber-50 text-amber-700 ring-1 ring-amber-200 dark:bg-amber-950/40 dark:text-amber-400 dark:ring-amber-900/50",
+  ERROR: "bg-red-50 text-red-700 ring-1 ring-red-200 dark:bg-red-950/40 dark:text-red-400 dark:ring-red-900/50",
+  CRITICAL: "bg-red-100 text-red-800 ring-1 ring-red-300 font-semibold dark:bg-red-900/40 dark:text-red-200 dark:ring-red-800",
 };
 
 function SeverityBadge({ severity }: { severity: string }) {

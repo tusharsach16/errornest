@@ -65,10 +65,11 @@ export default async function ErrorDetailPage({ params }: Props) {
 
   return (
     <main className="mx-auto max-w-[1280px] px-6 py-12">
-      <nav aria-label="Breadcrumb" className="mb-6">
+      {/* ── Breadcrumb ── */}
+      <nav aria-label="Breadcrumb" className="mb-6 animate-hero">
         <Link
           href={`/projects/${params.id}/errors`}
-          className="inline-flex items-center gap-1 text-sm text-indigo-600 hover:text-indigo-800 focus:outline-none focus-visible:ring-2 focus-visible:ring-indigo-600/30 rounded"
+          className="inline-flex items-center gap-1 text-sm text-indigo-600 dark:text-indigo-400 hover:text-indigo-800 dark:hover:text-indigo-300 focus:outline-none focus-visible:ring-2 focus-visible:ring-indigo-600/30 rounded"
         >
           <svg
             aria-hidden="true"
@@ -86,35 +87,43 @@ export default async function ErrorDetailPage({ params }: Props) {
         </Link>
       </nav>
 
-      <h1 className="text-2xl font-semibold tracking-tight text-gray-900 break-words">
-        {group.title}
-      </h1>
+      {/* ── Title Heading ── */}
+      <div className="space-y-1 animate-hero">
+        <span className="font-mono text-[10px] font-bold uppercase tracking-widest text-zinc-500 dark:text-zinc-400">
+          Error Group
+        </span>
+        <h1 className="text-2xl font-bold tracking-tight text-zinc-900 dark:text-zinc-100 sm:text-3xl break-words">
+          {group.title}
+        </h1>
+      </div>
 
-      <ErrorGroupHeader
-        projectId={params.id}
-        groupId={params.groupId}
-        severity={group.severity as "INFO" | "WARNING" | "ERROR" | "CRITICAL"}
-        initialStatus={group.status as "OPEN" | "RESOLVED" | "IGNORED"}
-      />
+      <div className="animate-hero" style={{ animationDelay: "60ms" }}>
+        <ErrorGroupHeader
+          projectId={params.id}
+          groupId={params.groupId}
+          severity={group.severity as "INFO" | "WARNING" | "ERROR" | "CRITICAL"}
+          initialStatus={group.status as "OPEN" | "RESOLVED" | "IGNORED"}
+        />
+      </div>
 
-      <dl className="mt-6 flex flex-wrap gap-x-8 gap-y-4 text-sm">
+      <dl className="mt-6 flex flex-wrap gap-x-8 gap-y-4 text-sm animate-hero" style={{ animationDelay: "120ms" }}>
         <div>
-          <dt className="font-medium text-gray-500">Occurrences</dt>
-          <dd className="mt-1 tabular-nums text-gray-900">
+          <dt className="font-semibold text-zinc-500 dark:text-zinc-400">Occurrences</dt>
+          <dd className="mt-1 tabular-nums text-zinc-900 dark:text-zinc-100">
             {group.occurrenceCount.toLocaleString()}
           </dd>
         </div>
         <div>
-          <dt className="font-medium text-gray-500">First seen</dt>
-          <dd className="mt-1 text-gray-900">
+          <dt className="font-semibold text-zinc-500 dark:text-zinc-400">First seen</dt>
+          <dd className="mt-1 text-zinc-900 dark:text-zinc-100">
             <time dateTime={group.firstSeenAt.toISOString()}>
               {group.firstSeenAt.toLocaleString()}
             </time>
           </dd>
         </div>
         <div>
-          <dt className="font-medium text-gray-500">Last seen</dt>
-          <dd className="mt-1 text-gray-900">
+          <dt className="font-semibold text-zinc-500 dark:text-zinc-400">Last seen</dt>
+          <dd className="mt-1 text-zinc-900 dark:text-zinc-100">
             <time dateTime={group.lastSeenAt.toISOString()}>
               {group.lastSeenAt.toLocaleString()}
             </time>
@@ -122,14 +131,16 @@ export default async function ErrorDetailPage({ params }: Props) {
         </div>
       </dl>
 
-      <hr className="mt-8 border-gray-200" />
+      <hr className="mt-8 border-gray-200 dark:border-zinc-800 animate-hero" style={{ animationDelay: "180ms" }} />
 
-      <ErrorDetailClient
-        projectId={params.id}
-        groupId={params.groupId}
-        initialItems={initialItems}
-        initialNextCursor={nextCursor}
-      />
+      <div className="animate-hero" style={{ animationDelay: "240ms" }}>
+        <ErrorDetailClient
+          projectId={params.id}
+          groupId={params.groupId}
+          initialItems={initialItems}
+          initialNextCursor={nextCursor}
+        />
+      </div>
     </main>
   );
 }

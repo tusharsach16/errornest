@@ -49,30 +49,37 @@ export default async function TeamPage({ params }: Props) {
 
   return (
     <main className="mx-auto max-w-[1280px] px-6 py-12">
-      <nav aria-label="Project navigation" className="mb-6 flex gap-1 border-b border-gray-200">
+      {/* ── Tabs ── */}
+      <nav aria-label="Project navigation" className="mb-6 flex gap-1 border-b border-gray-200 dark:border-zinc-800">
         <Link
           href={`/projects/${params.id}`}
-          className="border-b-2 border-transparent px-4 py-2 text-sm font-medium text-gray-500 transition-colors duration-[150ms] hover:text-gray-900"
+          className="border-b-2 border-transparent px-4 py-2 text-sm font-medium text-zinc-500 dark:text-zinc-400 transition-colors duration-[150ms] hover:text-zinc-900 dark:hover:text-zinc-100"
         >
           Overview
         </Link>
         <Link
           href={`/projects/${params.id}/errors`}
-          className="border-b-2 border-transparent px-4 py-2 text-sm font-medium text-gray-500 transition-colors duration-[150ms] hover:text-gray-900"
+          className="border-b-2 border-transparent px-4 py-2 text-sm font-medium text-zinc-500 dark:text-zinc-400 transition-colors duration-[150ms] hover:text-zinc-900 dark:hover:text-zinc-100"
         >
           Errors
         </Link>
         <span
-          className="border-b-2 border-indigo-600 px-4 py-2 text-sm font-semibold text-indigo-600"
+          className="border-b-2 border-indigo-600 dark:border-indigo-500 px-4 py-2 text-sm font-semibold text-indigo-600 dark:text-indigo-400"
           aria-current="page"
         >
           Team
         </span>
       </nav>
 
-      <h1 className="text-2xl font-semibold tracking-tight text-gray-900">
-        {project.name} — Team
-      </h1>
+      {/* ── Title Heading ── */}
+      <div className="space-y-1 animate-hero">
+        <span className="font-mono text-[10px] font-bold uppercase tracking-widest text-zinc-500 dark:text-zinc-400">
+          Team Management
+        </span>
+        <h1 className="text-2xl font-bold tracking-tight text-zinc-900 dark:text-zinc-100 sm:text-3xl">
+          {project.name} — Team
+        </h1>
+      </div>
 
       <TeamClient
         projectId={params.id}

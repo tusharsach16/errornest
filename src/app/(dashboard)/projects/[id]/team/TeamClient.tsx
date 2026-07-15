@@ -79,9 +79,9 @@ export function TeamClient({
   }, []);
 
   return (
-    <div className="mt-8 space-y-8">
+    <div className="mt-8 space-y-8 animate-hero" style={{ animationDelay: "60ms" }}>
       <section aria-labelledby="members-heading">
-        <h2 id="members-heading" className="mb-4 text-base font-semibold text-gray-700">
+        <h2 id="members-heading" className="mb-4 text-sm font-semibold uppercase tracking-wider text-zinc-700 dark:text-zinc-300">
           Members
         </h2>
         <MemberTable
@@ -95,8 +95,8 @@ export function TeamClient({
         />
       </section>
 
-      <section aria-labelledby="invite-heading">
-        <h2 id="invite-heading" className="mb-4 text-base font-semibold text-gray-700">
+      <section aria-labelledby="invite-heading" className="animate-hero" style={{ animationDelay: "120ms" }}>
+        <h2 id="invite-heading" className="mb-4 text-sm font-semibold uppercase tracking-wider text-zinc-700 dark:text-zinc-300">
           Invite a new member
         </h2>
         <InviteForm
@@ -135,27 +135,27 @@ function MemberTable({
 }) {
   if (members.length === 0) {
     return (
-      <p className="text-sm text-gray-500">No members yet.</p>
+      <p className="text-sm text-zinc-500 dark:text-zinc-400">No members yet.</p>
     );
   }
 
   return (
-    <div className="overflow-x-auto rounded-card border border-gray-200">
-      <table className="min-w-full divide-y divide-gray-200 text-sm" aria-label="Project members">
-        <thead className="bg-gray-50">
+    <div className="overflow-x-auto rounded-card border border-zinc-200 dark:border-zinc-800 bg-[#FDFDFD] dark:bg-zinc-900/20 shadow-sm">
+      <table className="min-w-full divide-y divide-zinc-200 dark:divide-zinc-800 text-sm" aria-label="Project members">
+        <thead className="bg-zinc-50 dark:bg-zinc-900/60">
           <tr>
-            <th scope="col" className="px-4 py-3 text-left font-semibold text-gray-600">
+            <th scope="col" className="px-4 py-3 text-left font-semibold text-zinc-600 dark:text-zinc-400">
               Member
             </th>
-            <th scope="col" className="px-4 py-3 text-left font-semibold text-gray-600">
+            <th scope="col" className="px-4 py-3 text-left font-semibold text-zinc-600 dark:text-zinc-400">
               Role
             </th>
-            <th scope="col" className="px-4 py-3 text-left font-semibold text-gray-600">
+            <th scope="col" className="px-4 py-3 text-left font-semibold text-zinc-600 dark:text-zinc-400">
               Actions
             </th>
           </tr>
         </thead>
-        <tbody className="divide-y divide-gray-100 bg-white">
+        <tbody className="divide-y divide-zinc-150 dark:divide-zinc-800/80 bg-white dark:bg-zinc-900/10">
           {members.map((member) => (
             <MemberRow
               key={member.id}
@@ -196,9 +196,7 @@ function MemberRow({
   const [isPending, startTransition] = useTransition();
 
   const isLastOwner = member.role === "OWNER" && ownerCount === 1;
-  // Can change role only if admin/owner, not own row, not last owner row
   const canChangeRole = !isSelf && !isLastOwner;
-  // Remove button only visible to OWNERs, never on self or last owner
   const canRemove = currentRole === "OWNER" && !isSelf && !isLastOwner;
 
   const displayName = member.userName ?? member.userEmail;
@@ -217,11 +215,11 @@ function MemberRow({
   };
 
   return (
-    <tr className="transition-colors duration-[150ms] hover:bg-gray-50" aria-busy={isPending}>
+    <tr className="transition-colors duration-[150ms] hover:bg-zinc-50 dark:hover:bg-zinc-800/30" aria-busy={isPending}>
       <td className="px-4 py-3">
-        <p className="font-medium text-gray-900">{displayName}</p>
+        <p className="font-semibold text-zinc-900 dark:text-zinc-100">{displayName}</p>
         {member.userName && (
-          <p className="text-xs text-gray-500">{member.userEmail}</p>
+          <p className="text-xs text-zinc-500 dark:text-zinc-400">{member.userEmail}</p>
         )}
       </td>
       <td className="px-4 py-3">
@@ -238,7 +236,7 @@ function MemberRow({
               onChange={handleRoleSelect}
               disabled={isPending}
               style={{ minHeight: "44px" }}
-              className="rounded-input border border-gray-300 bg-white px-3 py-2 text-sm text-gray-700 focus:border-indigo-600 focus:outline-none focus:ring-2 focus:ring-indigo-600/30 disabled:opacity-60"
+              className="rounded-input border border-zinc-300 dark:border-zinc-800 bg-white dark:bg-zinc-950 px-3 py-2 text-sm text-zinc-700 dark:text-zinc-300 placeholder-zinc-400 dark:placeholder-zinc-650 transition-colors duration-[150ms] hover:border-zinc-400 dark:hover:border-zinc-700 focus:border-indigo-600 dark:focus:border-indigo-500 focus:outline-none focus:ring-2 focus:ring-indigo-600/20 dark:focus:ring-indigo-500/20 disabled:opacity-60"
             >
               <option value="ADMIN">Admin</option>
               <option value="MEMBER">Member</option>
@@ -257,7 +255,7 @@ function MemberRow({
             aria-disabled={isPending}
             aria-label={`Remove ${displayName} from project`}
             style={{ minHeight: "44px" }}
-            className="inline-flex items-center gap-1 rounded border border-red-300 bg-white px-3 py-1 text-xs font-semibold text-red-700 transition-colors duration-[150ms] hover:bg-red-50 focus:outline-none focus-visible:ring-2 focus-visible:ring-red-500/40 disabled:cursor-not-allowed disabled:opacity-50"
+            className="inline-flex items-center gap-1 rounded border border-red-300 dark:border-red-900/50 bg-white dark:bg-zinc-900 px-3 py-1.5 text-xs font-semibold text-red-700 dark:text-red-400 transition-colors duration-[150ms] hover:bg-red-50 dark:hover:bg-red-950/20 active:bg-red-100 dark:active:bg-red-950/40 focus:outline-none focus-visible:ring-2 focus-visible:ring-red-500/40 disabled:cursor-not-allowed disabled:opacity-50"
           >
             {isPending ? <MiniSpinner /> : null}
             Remove
@@ -317,13 +315,13 @@ function InviteForm({
   };
 
   return (
-    <div className="rounded-card border border-gray-200 bg-white p-6">
+    <div className="rounded-card border border-zinc-200 dark:border-zinc-800 bg-[#FDFDFD] dark:bg-zinc-900/20 p-6 shadow-sm">
       <form onSubmit={handleSubmit} noValidate aria-label={`Invite member to ${projectName}`}>
         <div className="flex flex-wrap items-end gap-3">
           <div className="flex-1 min-w-[220px]">
             <label
               htmlFor="invite-email"
-              className="mb-1 block text-sm font-medium text-gray-700"
+              className="mb-1 block text-sm font-semibold text-zinc-700 dark:text-zinc-300"
             >
               Email address
             </label>
@@ -340,17 +338,17 @@ function InviteForm({
               autoComplete="email"
               disabled={isPending}
               style={{ minHeight: "44px" }}
-              className="w-full rounded-input border border-gray-300 px-3 py-2 text-sm text-gray-900 placeholder-gray-400 focus:border-indigo-600 focus:outline-none focus:ring-2 focus:ring-indigo-600/30 disabled:opacity-60"
+              className="w-full rounded-input border border-zinc-300 dark:border-zinc-800 bg-white dark:bg-zinc-950 px-3 py-2 text-sm text-zinc-900 dark:text-zinc-100 placeholder-zinc-400 dark:placeholder-zinc-650 transition-colors duration-[150ms] hover:border-zinc-400 dark:hover:border-zinc-700 focus:border-indigo-600 dark:focus:border-indigo-500 focus:outline-none focus:ring-2 focus:ring-indigo-600/20 dark:focus:ring-indigo-500/20 disabled:opacity-60"
             />
             {fieldError && (
-              <p className="mt-1 text-xs text-red-600" role="alert">{fieldError}</p>
+              <p className="mt-1 text-xs text-red-650 dark:text-red-400" role="alert">{fieldError}</p>
             )}
           </div>
 
           <div>
             <label
               htmlFor="invite-role"
-              className="mb-1 block text-sm font-medium text-gray-700"
+              className="mb-1 block text-sm font-semibold text-zinc-700 dark:text-zinc-300"
             >
               Role
             </label>
@@ -360,7 +358,7 @@ function InviteForm({
               onChange={(e) => setRole(e.target.value as AssignableRole)}
               disabled={isPending}
               style={{ minHeight: "44px" }}
-              className="rounded-input border border-gray-300 bg-white px-3 py-2 text-sm text-gray-700 focus:border-indigo-600 focus:outline-none focus:ring-2 focus:ring-indigo-600/30 disabled:opacity-60"
+              className="rounded-input border border-zinc-300 dark:border-zinc-800 bg-white dark:bg-zinc-950 px-3 py-2 text-sm text-zinc-700 dark:text-zinc-300 placeholder-zinc-400 dark:placeholder-zinc-650 transition-colors duration-[150ms] hover:border-zinc-400 dark:hover:border-zinc-700 focus:border-indigo-600 dark:focus:border-indigo-500 focus:outline-none focus:ring-2 focus:ring-indigo-600/20 dark:focus:ring-indigo-500/20 disabled:opacity-60"
             >
               <option value="ADMIN">Admin</option>
               <option value="MEMBER">Member</option>
@@ -373,7 +371,7 @@ function InviteForm({
             disabled={isPending}
             aria-busy={isPending}
             style={{ minHeight: "44px" }}
-            className="inline-flex items-center gap-2 rounded bg-indigo-600 px-5 py-2 text-sm font-semibold text-white transition-colors duration-[150ms] hover:bg-indigo-700 focus:outline-none focus-visible:ring-2 focus-visible:ring-indigo-600/50 disabled:opacity-60"
+            className="inline-flex items-center justify-center gap-2 rounded-pill bg-zinc-900 dark:bg-zinc-100 px-5 py-2.5 text-sm font-semibold text-white dark:text-zinc-950 shadow-sm transition-all duration-[150ms] ease-out hover:bg-black dark:hover:bg-white hover:scale-[1.03] active:scale-[0.98] focus-visible:rounded-pill disabled:opacity-60 motion-reduce:hover:scale-100 motion-reduce:active:scale-100"
           >
             {isPending && <MiniSpinner />}
             {isPending ? "Adding…" : "Add member"}
@@ -385,7 +383,7 @@ function InviteForm({
         <div
           role="status"
           aria-live="polite"
-          className="mt-4 rounded-input border border-amber-200 bg-amber-50 px-4 py-3 text-sm text-amber-800"
+          className="mt-4 rounded-input border border-amber-200 dark:border-amber-900/50 bg-amber-50 dark:bg-amber-950/20 px-4 py-3 text-sm text-amber-800 dark:text-amber-300"
         >
           <span className="font-semibold">{noAccountEmail}</span> doesn&apos;t have an
           ErrorNest account yet. They need to sign up at{" "}
@@ -399,17 +397,17 @@ function InviteForm({
 // ─── Role badge ───────────────────────────────────────────────────────────────
 
 const ROLE_BADGE_CLASSES: Record<string, string> = {
-  OWNER: "bg-indigo-100 text-indigo-800 ring-1 ring-indigo-200",
-  ADMIN: "bg-violet-50 text-violet-700 ring-1 ring-violet-200",
-  MEMBER: "bg-blue-50 text-blue-700 ring-1 ring-blue-200",
-  VIEWER: "bg-gray-100 text-gray-600 ring-1 ring-gray-200",
+  OWNER: "bg-indigo-100 text-indigo-800 ring-1 ring-indigo-200 dark:bg-indigo-950/40 dark:text-indigo-400 dark:ring-indigo-900/50",
+  ADMIN: "bg-violet-50 text-violet-700 ring-1 ring-violet-200 dark:bg-violet-950/40 dark:text-violet-400 dark:ring-violet-900/50",
+  MEMBER: "bg-blue-50 text-blue-700 ring-1 ring-blue-200 dark:bg-blue-950/40 dark:text-blue-400 dark:ring-blue-900/50",
+  VIEWER: "bg-gray-100 text-gray-600 ring-1 ring-gray-200 dark:bg-zinc-800 dark:text-zinc-400 dark:ring-zinc-700",
 };
 
 function RoleBadge({ role }: { role: string }) {
   const label = role.charAt(0) + role.slice(1).toLowerCase();
   return (
     <span
-      className={`inline-block rounded-pill px-2 py-0.5 text-xs font-medium ${ROLE_BADGE_CLASSES[role] ?? ""}`}
+      className={`inline-block rounded-pill px-2 py-0.5 text-xs font-semibold ${ROLE_BADGE_CLASSES[role] ?? ""}`}
     >
       {label}
     </span>
