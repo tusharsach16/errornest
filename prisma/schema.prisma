@@ -35,6 +35,8 @@ model User {
   email           String          @unique
   passwordHash    String
   name            String?
+  company         String?
+  bio             String?
   emailVerifiedAt DateTime?
   createdAt       DateTime        @default(now())
   updatedAt       DateTime        @updatedAt
