@@ -60,6 +60,7 @@ export default async function ErrorDetailPage({ params }: Props) {
     stackTrace: e.stackTrace ?? null,
     browser: e.browser ?? null,
     url: e.url ?? null,
+    userContext: (e.userContext as Record<string, unknown>) ?? null,
     createdAt: e.createdAt.toISOString(),
   }));
 

@@ -121,11 +121,22 @@ function EventCard({ event, index }: { event: SerializableErrorEvent; index: num
 
       {event.stackTrace && (
         <details className="border-t border-zinc-150 dark:border-zinc-800/80" open={!isLong}>
-          <summary className="cursor-pointer select-none px-6 py-3 text-xs font-semibold text-indigo-600 dark:text-indigo-400 hover:text-indigo-700 dark:hover:text-indigo-300 focus:outline-none focus-visible:ring-2 focus-visible:ring-inset focus-visible:ring-indigo-650/40 dark:focus-visible:ring-indigo-500/40" style={{ minHeight: "44px", display: "flex", alignItems: "center" }}>
+          <summary className="cursor-pointer select-none px-6 py-3 text-xs font-semibold text-indigo-650 dark:text-indigo-400 hover:text-indigo-700 dark:hover:text-indigo-300 focus:outline-none focus-visible:ring-2 focus-visible:ring-inset focus-visible:ring-indigo-650/40 dark:focus-visible:ring-indigo-500/40" style={{ minHeight: "44px", display: "flex", alignItems: "center" }}>
             {isLong ? "Show stack trace" : "Stack trace"}
           </summary>
-          <pre className="overflow-x-auto bg-gray-950 px-6 py-4 font-mono text-xs leading-relaxed text-zinc-300 rounded-b-card border-t border-zinc-800">
+          <pre className="overflow-x-auto bg-gray-950 px-6 py-4 font-mono text-xs leading-relaxed text-zinc-300 border-t border-zinc-800">
             {event.stackTrace}
+          </pre>
+        </details>
+      )}
+
+      {event.userContext && Object.keys(event.userContext).length > 0 && (
+        <details className="border-t border-zinc-150 dark:border-zinc-800/80">
+          <summary className="cursor-pointer select-none px-6 py-3 text-xs font-semibold text-indigo-650 dark:text-indigo-400 hover:text-indigo-700 dark:hover:text-indigo-300 focus:outline-none focus-visible:ring-2 focus-visible:ring-inset focus-visible:ring-indigo-650/40 dark:focus-visible:ring-indigo-500/40" style={{ minHeight: "44px", display: "flex", alignItems: "center" }}>
+            User context
+          </summary>
+          <pre className="overflow-x-auto bg-gray-950 px-6 py-4 font-mono text-xs leading-relaxed text-zinc-300 border-t border-zinc-800">
+            {JSON.stringify(event.userContext, null, 2)}
           </pre>
         </details>
       )}
