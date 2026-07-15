@@ -1,4 +1,4 @@
-﻿"use server";
+"use server";
 
 import { getServerUserId } from "@/lib/session";
 import { redirect } from "next/navigation";
@@ -25,6 +25,7 @@ export interface SerializableErrorEvent {
   stackTrace: string | null;
   browser: string | null;
   url: string | null;
+  userContext: Record<string, unknown> | null;
   createdAt: string;
 }
 
@@ -92,6 +93,7 @@ export async function listErrorEventsAction(
       stackTrace: e.stackTrace ?? null,
       browser: e.browser ?? null,
       url: e.url ?? null,
+      userContext: (e.userContext as Record<string, unknown>) ?? null,
       createdAt: e.createdAt.toISOString(),
     }));
 
