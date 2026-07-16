@@ -3,10 +3,12 @@
 import { redirect } from "next/navigation";
 import { getServerUserId } from "@/lib/session";
 import { db } from "@/lib/db";
+import { env } from "@/lib/env";
 import {
   PrismaProjectMemberRepository,
 } from "@/server/repositories/prisma-project.repository";
 import { RbacService } from "@/server/services/rbac.service";
+import { EmailNotifier } from "@/server/notifiers/email.notifier";
 import type { Role } from "@/server/domain/entities";
 import type { MemberWithUser } from "@/server/domain/repositories";
 
@@ -27,6 +29,8 @@ export async function inviteMemberAction(
   const userId = await getServerUserId();
   if (!userId) redirect("/login");
 
+  console.log("BREVO_API_KEY present:", !!env.BREVO_API_KEY);
+  console.log("EMAIL_FROM:", env.EMAIL_FROM);
   const memberRepo = new PrismaProjectMemberRepository();
   const rbac = new RbacService(memberRepo);
 
@@ -51,6 +55,24 @@ export async function inviteMemberAction(
     const members = await memberRepo.listWithUserDetails(projectId);
     const added = members.find((m) => m.userId === target.id);
     if (!added) return { ok: false, error: "Failed to retrieve new member." };
+
+    // Email failure must not roll back the membership — it's the source of truth.
+    if (env.BREVO_API_KEY) {
+      const project = await db.project.findUnique({ where: { id: projectId } });
+      if (project) {
+        const notifier = new EmailNotifier(
+          env.BREVO_API_KEY,
+          env.EMAIL_FROM ?? "alerts@errornest.dev",
+          async () => [],
+        );
+        notifier.notifyMemberInvited(project, target.email, role)
+          .then(() => console.log("[inviteMember] email sent successfully to", target.email))
+          .catch((err: unknown) => {
+            console.error("[inviteMember] email send failed:", err);
+          });
+      }
+    }
+
     return { ok: true, member: added };
   } catch {
     return { ok: false, error: "Failed to add member. Please try again." };
@@ -127,3 +149,19 @@ export async function removeMemberAction(
     return { ok: false, error: "Failed to remove member. Please try again." };
   }
 }
+
+export async function getTeamMembersAction(
+  projectId: string,
+): Promise<MemberWithUser[]> {
+  const userId = await getServerUserId();
+  if (!userId) redirect("/login");
+
+  const memberRepo = new PrismaProjectMemberRepository();
+  const role = await memberRepo.getRole(projectId, userId);
+  if (!role) {
+    throw new Error("Access denied");
+  }
+
+  return memberRepo.listWithUserDetails(projectId);
+}
+
