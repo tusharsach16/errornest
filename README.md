@@ -42,8 +42,8 @@ npm run dev             # http://localhost:3000
 |`DATABASE\\\_URL`|Postgres connection string|
 |`AUTH\\\_SECRET`|Session signing secret (`openssl rand -base64 32`)|
 |`NEXTAUTH\\\_URL`|Base URL for Auth.js callbacks|
-|`RESEND\\\_API\\\_KEY`|Email provider key for critical-error alerts|
-|`EMAIL\\\_FROM`|Sender address for alert emails|
+|`BREVO\\\_API\\\_KEY`|Email provider key for critical-error and invite alerts|
+|`EMAIL\\\_FROM`|Verified sender address for alert emails|
 
 ## Architecture
 

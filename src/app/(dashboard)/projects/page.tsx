@@ -7,6 +7,7 @@ import { PrismaErrorRepository } from "@/server/repositories/prisma-error.reposi
 import type { Project } from "@/server/domain/entities";
 import StatCard from "@/components/dashboard/StatCard";
 import ProjectCard from "@/components/dashboard/ProjectCard";
+import { ProjectsPoller } from "./ProjectsPoller";
 
 export const metadata: Metadata = {
   title: "Your Projects — ErrorNest",
@@ -36,6 +37,7 @@ export default async function ProjectsPage() {
 
   return (
     <div className="mx-auto max-w-[1200px] px-6 py-8">
+      <ProjectsPoller initialProjectIds={projectIds} />
       {/* ── Header ── */}
       <div className="flex items-center justify-between animate-hero">
         <div className="space-y-1">
