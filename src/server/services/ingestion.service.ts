@@ -6,7 +6,7 @@ import { GroupingService } from "./grouping.service";
 /**
  * Decides what to store when an error arrives. Depends only on interfaces
  * (IErrorRepository, IProjectRepository, INotifier) — never imports Prisma
- * or Resend directly, so it's unit-testable with in-memory fakes and the
+ * or Brevo directly, so it's unit-testable with in-memory fakes and the
  * concrete implementations can be swapped without touching this file.
  */
 export class IngestionService {
