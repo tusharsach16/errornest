@@ -4,7 +4,7 @@
 > errors here, get grouped, searchable, real-time-ish visibility instead of
 > waiting for users to complain.
 
-!\\\[Hero screenshot](docs/screenshots/hero.png)
+![Hero screenshot](docs/screenshots/hero.png)
 
 **Live demo → https://errornest.vercel.app**
 
@@ -28,10 +28,10 @@ CSS · Auth.js · Recharts · Vercel
 ## Quick Start
 
 ```bash
-git clone https://github.com/you/errornest \\\&\\\& cd errornest
+git clone https://github.com/you/errornest && cd errornest
 cp .env.example .env   # then fill in values
 npm install
-npm run db:migrate \\\&\\\& npm run db:seed
+npm run db:migrate && npm run db:seed
 npm run dev             # http://localhost:3000
 ```
 
@@ -39,11 +39,11 @@ npm run dev             # http://localhost:3000
 
 |Variable|Description|
 |-|-|
-|`DATABASE\\\_URL`|Postgres connection string|
-|`AUTH\\\_SECRET`|Session signing secret (`openssl rand -base64 32`)|
-|`NEXTAUTH\\\_URL`|Base URL for Auth.js callbacks|
-|`BREVO\\\_API\\\_KEY`|Email provider key for critical-error and invite alerts|
-|`EMAIL\\\_FROM`|Verified sender address for alert emails|
+|`DATABASE_URL`|Postgres connection string|
+|`AUTH_SECRET`|Session signing secret (`openssl rand -base64 32`)|
+|`NEXTAUTH_URL`|Base URL for Auth.js callbacks|
+|`BREVO_API_KEY`|Email provider key for critical-error and invite alerts|
+|`EMAIL_FROM`|Verified sender address for alert emails|
 
 ## Architecture
 
