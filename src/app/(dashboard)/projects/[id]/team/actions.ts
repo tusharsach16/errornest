@@ -29,8 +29,6 @@ export async function inviteMemberAction(
   const userId = await getServerUserId();
   if (!userId) redirect("/login");
 
-  console.log("BREVO_API_KEY present:", !!env.BREVO_API_KEY);
-  console.log("EMAIL_FROM:", env.EMAIL_FROM);
   const memberRepo = new PrismaProjectMemberRepository();
   const rbac = new RbacService(memberRepo);
 
