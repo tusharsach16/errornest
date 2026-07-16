@@ -1,12 +1,13 @@
 "use client";
 
-import { useCallback, useState, useTransition } from "react";
+import { useCallback, useEffect, useState, useTransition } from "react";
 import { Toast } from "@/components/Toast";
 import type { ToastState } from "@/components/Toast";
 import {
   inviteMemberAction,
   updateMemberRoleAction,
   removeMemberAction,
+  getTeamMembersAction,
 } from "./actions";
 import type { MemberWithUser, AssignableRole } from "./actions";
 
@@ -34,6 +35,54 @@ export function TeamClient({
   const [members, setMembers] = useState<MemberWithUser[]>(initialMembers);
   const [toast, setToast] = useState<ToastState | null>(null);
   const dismissToast = useCallback(() => setToast(null), []);
+
+  useEffect(() => {
+    const checkAndFetch = async () => {
+      if (document.visibilityState !== "visible") return;
+      try {
+        const fresh = await getTeamMembersAction(projectId);
+        setMembers((current) => {
+          if (current.length !== fresh.length) {
+            return fresh;
+          }
+          const currentSorted = [...current].sort((x, y) => x.id.localeCompare(y.id));
+          const freshSorted = [...fresh].sort((x, y) => x.id.localeCompare(y.id));
+          const isEqual = currentSorted.every((memberA, index) => {
+            const memberB = freshSorted[index];
+            return (
+              memberB &&
+              memberA.id === memberB.id &&
+              memberA.projectId === memberB.projectId &&
+              memberA.userId === memberB.userId &&
+              memberA.role === memberB.role &&
+              memberA.userName === memberB.userName &&
+              memberA.userEmail === memberB.userEmail
+            );
+          });
+          if (isEqual) {
+            return current;
+          }
+          return fresh;
+        });
+      } catch {
+      }
+    };
+
+    const intervalId = setInterval(checkAndFetch, 10000);
+
+    const handleVisibilityChange = () => {
+      if (document.visibilityState === "visible") {
+        checkAndFetch();
+      }
+    };
+
+    document.addEventListener("visibilitychange", handleVisibilityChange);
+
+    return () => {
+      clearInterval(intervalId);
+      document.removeEventListener("visibilitychange", handleVisibilityChange);
+    };
+  }, [projectId]);
 
   const ownerCount = members.filter((m) => m.role === "OWNER").length;
 
