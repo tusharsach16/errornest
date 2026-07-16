@@ -7,4 +7,5 @@ import type { ErrorGroup, Project } from "../domain/entities";
  */
 export interface INotifier {
   notifyNewCriticalError(project: Project, group: ErrorGroup): Promise<void>;
+  notifyMemberInvited(project: Project, invitedUserEmail: string, role: string): Promise<void>;
 }
