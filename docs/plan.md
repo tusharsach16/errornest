@@ -356,7 +356,7 @@ partitioning, adding a queue, or adding Redis caching only touches the
 
 &#x20; bursts is enough for the demo and grading.
 
-\- Email via Resend (simplest DX); swap-friendly since it's behind
+\- Email via Brevo (formerly Sendinblue); swap-friendly since it's behind
 
 &#x20; `INotifier`.
 
