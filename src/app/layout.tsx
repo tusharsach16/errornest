@@ -13,6 +13,9 @@ const jetbrainsMono = JetBrains_Mono({
 import { ThemeProvider } from "@/components/ThemeProvider";
 
 export const metadata: Metadata = {
+  metadataBase: new URL(
+    process.env.NEXT_PUBLIC_APP_URL ?? "http://localhost:3000"
+  ),
   title: {
     default: "ErrorNest — Error monitoring that doesn't get in your way",
     template: "%s · ErrorNest",
