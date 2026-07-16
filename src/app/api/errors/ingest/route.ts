@@ -36,12 +36,12 @@ export async function POST(req: NextRequest) {
       return NextResponse.json({ error: "Invalid payload", details: parsed.error.flatten() }, { status: 400 });
     }
 
-    const notifier = env.RESEND_API_KEY
-      ? new EmailNotifier(env.RESEND_API_KEY, env.EMAIL_FROM ?? "alerts@errornest.dev", async (project) => {
+    const notifier = env.BREVO_API_KEY
+      ? new EmailNotifier(env.BREVO_API_KEY, env.EMAIL_FROM ?? "alerts@errornest.dev", async (project) => {
           const owner = await db.user.findUnique({ where: { id: project.ownerId } });
           return owner ? [owner.email] : [];
         })
-      : { notifyNewCriticalError: async () => {} };
+      : { notifyNewCriticalError: async () => {}, notifyMemberInvited: async () => {} };
 
     const service = new IngestionService(
       new PrismaErrorRepository(),
