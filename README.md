@@ -91,6 +91,10 @@ npm run test:e2e   # playwright
 
 `demo@demo.com` / `demo1234` *(read-only demo account, once seeded)*
 
+## Case Study
+
+See the full [case study](docs/case-study.md) for the problem, approach, and learnings behind this build.
+
 ## License
 
 MIT — see [LICENSE](LICENSE).
