@@ -5,6 +5,8 @@ Format follows [Keep a Changelog](https://keepachangelog.com/en/1.1.0/).
 
 ## [Unreleased]
 
+## [1.0.0] - 2026-07-16
+
 ### Added
 - Initial project scaffold: Next.js App Router, Prisma schema, layered
   server architecture (domain / repositories / services / notifiers).
@@ -18,13 +20,7 @@ Format follows [Keep a Changelog](https://keepachangelog.com/en/1.1.0/).
 - Resolve/ignore/reopen status actions on error dashboard and detail view with optimistic UI, RBAC enforcement, and toast notifications.
 - Project overview page with 14-day error volume chart and top-5 error groups list.
 - Team management page with role-based invite, role change, and member removal, enforcing RBAC server-side.
-
-
-
-<!--
-## [1.0.0] - YYYY-MM-DD
-### Added
-- Authentication, dashboard, and CRUD for error groups.
-### Fixed
-- ...
--->
+- Landing page redesign with animated terminal mockup and light/dark theme support.
+- Login/signup page redesign matching the landing page design system.
+- Dashboard shell with sidebar navigation, command palette, and user profile settings.
+- Email notifications via Brevo for critical errors and team invites.

@@ -4,7 +4,7 @@
 > errors here, get grouped, searchable, real-time-ish visibility instead of
 > waiting for users to complain.
 
-<!-- !\\\[Hero screenshot](docs/screenshots/hero.png) -->
+!\\\[Hero screenshot](docs/screenshots/hero.png)
 
 **Live demo → https://errornest.vercel.app**
 
@@ -75,8 +75,17 @@ npm run test:e2e   # playwright
 
 ## Screenshots
 
-*Add screenshots of the dashboard, error detail view, and team settings here
-once built — grid of the core flows.*
+| Dashboard | Project Overview |
+|---|---|
+| ![Dashboard](docs/screenshots/dashboard.png) | ![Overview](docs/screenshots/overview.png) |
+
+| Errors List | Error Detail |
+|---|---|
+| ![Errors](docs/screenshots/errors.png) | ![Error Detail](docs/screenshots/error-detail.png) |
+
+| Team Management |
+|---|
+| ![Team](docs/screenshots/team.png) |
 
 ## Demo credentials
 
