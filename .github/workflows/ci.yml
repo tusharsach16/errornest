@@ -36,3 +36,7 @@ jobs:
         env:
           DATABASE_URL: postgresql://ci:ci@localhost:5432/ci
           AUTH_SECRET: ci-only-secret-not-used-in-real-deploy-000000
+
+      - name: Build Docker image
+        run: docker build -t errornest:latest .
+
