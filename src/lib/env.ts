@@ -6,6 +6,7 @@ const envSchema = z.object({
   BREVO_API_KEY: z.string().optional(),
   EMAIL_FROM: z.string().email().optional(),
   NEXTAUTH_URL: z.string().url().optional(),
+  SLACK_WEBHOOK_URL: z.string().url().optional(),
 });
 
 // Fail fast at boot if required env vars are missing/malformed, instead of
