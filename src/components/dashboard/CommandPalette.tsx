@@ -4,6 +4,8 @@ import { useEffect, useState, useRef, useCallback, useMemo } from "react";
 import { useRouter } from "next/navigation";
 import { useTheme } from "next-themes";
 import { signOut } from "next-auth/react";
+import { CommandPaletteItem } from "./components/CommandPaletteItem";
+import { CommandPaletteFooter } from "./components/CommandPaletteFooter";
 
 interface CommandPaletteProps {
   open: boolean;
@@ -98,14 +100,12 @@ export default function CommandPalette({ open, onClose, projects }: CommandPalet
     return [...navItems, ...projectItems, ...actionItems];
   }, [projects, resolvedTheme, router, onClose, setTheme]);
 
-  // Filter items by query
   const filtered = useMemo(() => {
     if (!query.trim()) return items;
     const lower = query.toLowerCase();
     return items.filter((item) => item.label.toLowerCase().includes(lower));
   }, [items, query]);
 
-  // Group by section
   const sections = useMemo(() => {
     const map = new Map<string, CommandItem[]>();
     for (const item of filtered) {
@@ -115,7 +115,6 @@ export default function CommandPalette({ open, onClose, projects }: CommandPalet
     return map;
   }, [filtered]);
 
-  // Reset on open/close
   useEffect(() => {
     if (open) {
       setQuery("");
@@ -124,12 +123,10 @@ export default function CommandPalette({ open, onClose, projects }: CommandPalet
     }
   }, [open]);
 
-  // Reset active index when filter changes
   useEffect(() => {
     setActiveIndex(0);
   }, [query]);
 
-  // Keyboard navigation
   const handleKeyDown = useCallback(
     (e: React.KeyboardEvent) => {
       if (e.key === "ArrowDown") {
@@ -149,7 +146,6 @@ export default function CommandPalette({ open, onClose, projects }: CommandPalet
     [filtered, activeIndex, onClose],
   );
 
-  // Scroll active item into view
   useEffect(() => {
     if (!listRef.current) return;
     const activeEl = listRef.current.querySelector(`[data-index="${activeIndex}"]`);
@@ -162,14 +158,12 @@ export default function CommandPalette({ open, onClose, projects }: CommandPalet
 
   return (
     <>
-      {/* Backdrop */}
       <div
         className="fixed inset-0 z-[100] bg-black/40 dark:bg-black/60 backdrop-blur-sm animate-fade-in"
         onClick={onClose}
         aria-hidden="true"
       />
 
-      {/* Dialog */}
       <div className="fixed inset-0 z-[101] flex items-start justify-center pt-[15vh]">
         <div
           role="dialog"
@@ -177,7 +171,6 @@ export default function CommandPalette({ open, onClose, projects }: CommandPalet
           className="w-full max-w-lg rounded-[16px] border border-gray-200 dark:border-zinc-800 bg-white dark:bg-zinc-900 shadow-2xl overflow-hidden animate-scale-in"
           onKeyDown={handleKeyDown}
         >
-          {/* Search input */}
           <div className="flex items-center gap-3 border-b border-gray-200 dark:border-zinc-800 px-4 py-3">
             <svg className="h-5 w-5 shrink-0 text-zinc-400" fill="none" viewBox="0 0 24 24" stroke="currentColor" strokeWidth={2}>
               <path d="M21 21l-6-6m2-5a7 7 0 11-14 0 7 7 0 0114 0z" />
@@ -197,7 +190,6 @@ export default function CommandPalette({ open, onClose, projects }: CommandPalet
             </kbd>
           </div>
 
-          {/* Results */}
           <div ref={listRef} className="max-h-[320px] overflow-y-auto py-2">
             {filtered.length === 0 ? (
               <div className="px-4 py-8 text-center text-sm text-zinc-500 dark:text-zinc-400">
@@ -211,30 +203,14 @@ export default function CommandPalette({ open, onClose, projects }: CommandPalet
                   </p>
                   {sectionItems.map((item) => {
                     const idx = flatIndex++;
-                    const isActive = idx === activeIndex;
                     return (
-                      <button
+                      <CommandPaletteItem
                         key={item.id}
-                        type="button"
-                        data-index={idx}
-                        onClick={item.action}
-                        onMouseEnter={() => setActiveIndex(idx)}
-                        className={`
-                          flex w-full items-center gap-3 px-4 py-2.5 text-sm transition-colors duration-100
-                          ${isActive
-                            ? "bg-indigo-50 dark:bg-indigo-950/30 text-indigo-600 dark:text-indigo-400"
-                            : "text-zinc-700 dark:text-zinc-300 hover:bg-zinc-50 dark:hover:bg-zinc-800/50"
-                          }
-                        `}
-                      >
-                        <span className={`shrink-0 ${isActive ? "text-indigo-500" : "text-zinc-400 dark:text-zinc-500"}`}>
-                          {item.icon}
-                        </span>
-                        <span className="truncate">{item.label}</span>
-                        {isActive && (
-                          <span className="ml-auto text-[10px] font-mono text-zinc-400 dark:text-zinc-500">↵</span>
-                        )}
-                      </button>
+                        item={item}
+                        idx={idx}
+                        activeIndex={activeIndex}
+                        setActiveIndex={setActiveIndex}
+                      />
                     );
                   })}
                 </div>
@@ -242,21 +218,7 @@ export default function CommandPalette({ open, onClose, projects }: CommandPalet
             )}
           </div>
 
-          {/* Footer hints */}
-          <div className="flex items-center gap-4 border-t border-gray-200 dark:border-zinc-800 px-4 py-2 text-[10px] text-zinc-400 dark:text-zinc-500">
-            <span className="flex items-center gap-1">
-              <kbd className="rounded border border-gray-200 dark:border-zinc-700 px-1 py-0.5 font-mono">↑↓</kbd>
-              Navigate
-            </span>
-            <span className="flex items-center gap-1">
-              <kbd className="rounded border border-gray-200 dark:border-zinc-700 px-1 py-0.5 font-mono">↵</kbd>
-              Select
-            </span>
-            <span className="flex items-center gap-1">
-              <kbd className="rounded border border-gray-200 dark:border-zinc-700 px-1 py-0.5 font-mono">ESC</kbd>
-              Close
-            </span>
-          </div>
+          <CommandPaletteFooter />
         </div>
       </div>
     </>

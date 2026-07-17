@@ -3,6 +3,8 @@
 All notable changes to this project are documented here.
 Format follows [Keep a Changelog](https://keepachangelog.com/en/1.1.0/).
 
+## [1.1.0] - 2026-07-17
+
 ## [1.0.0] - 2026-07-16
 
 ### Added
@@ -25,3 +27,4 @@ Format follows [Keep a Changelog](https://keepachangelog.com/en/1.1.0/).
 - Slack webhook notification channel for critical errors and team invitations using a composite notifier.
 - Complete Docker build configuration (`Dockerfile` and `docker-compose.yml`) for development and production environments.
 - CI/CD workflow (`ci.yml`) for automated linting, typechecking, testing, and Docker image build validation.
+- Saved search views in the errors dashboard, allowing custom filters to be saved, applied, and deleted.

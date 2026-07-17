@@ -3,35 +3,7 @@
 import { useEffect, useState } from "react";
 import Link from "next/link";
 import { useTheme } from "next-themes";
-
-/** Inline SVG hamburger / close icons — no external icon dependency needed */
-function HamburgerIcon({ open }: { open: boolean }) {
-  return (
-    <svg
-      aria-hidden="true"
-      className="h-6 w-6"
-      fill="none"
-      viewBox="0 0 24 24"
-      stroke="currentColor"
-      strokeWidth={1.75}
-    >
-      {open ? (
-        // X / close
-        <>
-          <line x1="4" y1="4" x2="20" y2="20" strokeLinecap="round" />
-          <line x1="20" y1="4" x2="4" y2="20" strokeLinecap="round" />
-        </>
-      ) : (
-        // Three-bar hamburger
-        <>
-          <line x1="4" y1="7" x2="20" y2="7" strokeLinecap="round" />
-          <line x1="4" y1="12" x2="20" y2="12" strokeLinecap="round" />
-          <line x1="4" y1="17" x2="20" y2="17" strokeLinecap="round" />
-        </>
-      )}
-    </svg>
-  );
-}
+import { HamburgerIcon } from "@/components/icons/HamburgerIcon";
 
 const NAV_LINKS = [
   { label: "Features", href: "#features" },
@@ -43,7 +15,6 @@ export default function Header() {
   const { resolvedTheme, setTheme } = useTheme();
   const [mounted, setMounted] = useState(false);
 
-  // Read theme on mount to avoid hydration mismatch
   useEffect(() => {
     setMounted(true);
   }, []);
@@ -55,13 +26,11 @@ export default function Header() {
   return (
     <header className="sticky top-0 z-50 w-full border-b border-gray-200 dark:border-zinc-800 bg-[#FDFDFD]/90 dark:bg-zinc-950/90 backdrop-blur-sm transition-colors duration-[150ms]">
       <div className="mx-auto flex max-w-[1280px] items-center justify-between px-6 py-4">
-        {/* ── Logo ── */}
         <Link
           href="/"
           aria-label="ErrorNest home"
           className="flex items-center gap-2 font-sans text-lg font-bold tracking-tight text-ink transition-all duration-[150ms] hover:opacity-85 hover:scale-[1.02] active:scale-[0.98] focus-visible:rounded motion-reduce:hover:scale-100 motion-reduce:active:scale-100"
         >
-          {/* Small icon mark */}
           <span
             aria-hidden="true"
             className="flex h-8 w-8 items-center justify-center rounded-[8px] bg-zinc-900 dark:bg-zinc-100 text-white dark:text-zinc-950 text-sm font-bold select-none"
@@ -73,7 +42,6 @@ export default function Header() {
           </span>
         </Link>
 
-        {/* ── Desktop nav ── */}
         <nav
           aria-label="Main navigation"
           className="hidden md:flex items-center gap-8"
@@ -89,7 +57,6 @@ export default function Header() {
           ))}
         </nav>
 
-        {/* ── Desktop auth actions ── */}
         <div className="hidden md:flex items-center gap-4">
           <Link
             href="/login"
@@ -104,7 +71,6 @@ export default function Header() {
             Sign up
           </Link>
           
-          {/* Theme Toggle Button */}
           <button
             type="button"
             onClick={toggleTheme}
@@ -112,7 +78,6 @@ export default function Header() {
             className="flex h-11 w-11 items-center justify-center rounded-pill border border-gray-200 dark:border-zinc-800 bg-[#FDFDFD] dark:bg-zinc-900 text-gray-500 dark:text-zinc-400 transition-all duration-[150ms] ease-out hover:bg-zinc-100 dark:hover:bg-zinc-800 hover:text-zinc-900 dark:hover:text-zinc-100 hover:scale-[1.05] active:scale-[0.97] focus-visible:rounded-pill motion-reduce:hover:scale-100 motion-reduce:active:scale-100"
           >
             {mounted && resolvedTheme === "dark" ? (
-              // Sun icon for dark mode (click to switch to light)
               <svg
                 aria-hidden="true"
                 className="h-5 w-5"
@@ -132,7 +97,6 @@ export default function Header() {
                 <path d="M19.07 4.93l-1.41 1.41" />
               </svg>
             ) : (
-              // Moon icon for light mode (click to switch to dark)
               <svg
                 aria-hidden="true"
                 className="h-5 w-5"
@@ -147,7 +111,6 @@ export default function Header() {
           </button>
         </div>
 
-        {/* ── Mobile menu toggle ── */}
         <button
           type="button"
           aria-expanded={menuOpen}
@@ -160,7 +123,6 @@ export default function Header() {
         </button>
       </div>
 
-      {/* ── Mobile menu panel ── */}
       <div
         id="mobile-menu"
         role="navigation"
@@ -199,7 +161,6 @@ export default function Header() {
               Sign up
             </Link>
             
-            {/* Mobile Theme Toggle */}
             <button
               type="button"
               onClick={toggleTheme}

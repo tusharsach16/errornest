@@ -6,6 +6,7 @@ import type {
   ErrorGroupFilters,
   Role,
   Severity,
+  SavedSearch,
 } from "./entities";
 
 export interface MemberWithUser {
@@ -70,4 +71,11 @@ export interface IApiKeyRepository {
   create(projectId: string, hashedKey: string, label?: string): Promise<{ id: string }>;
   findByHash(hashedKey: string): Promise<{ projectId: string; revokedAt: Date | null } | null>;
   revoke(id: string): Promise<void>;
+}
+
+export interface ISavedSearchRepository {
+  create(input: { projectId: string; userId: string; name: string; filters: any }): Promise<SavedSearch>;
+  list(projectId: string, userId: string): Promise<SavedSearch[]>;
+  findById(id: string): Promise<SavedSearch | null>;
+  delete(id: string): Promise<void>;
 }

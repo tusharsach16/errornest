@@ -7,6 +7,7 @@ import {
   PrismaProjectMemberRepository,
 } from "@/server/repositories/prisma-project.repository";
 import { PrismaErrorRepository } from "@/server/repositories/prisma-error.repository";
+import { PrismaSavedSearchRepository } from "@/server/repositories/prisma-saved-search.repository";
 import { errorGroupFilterSchema } from "@/lib/validators/error.validators";
 import { ErrorsClient, type FilterStatus, type FilterSeverity } from "./ErrorsClient";
 import type { SerializableErrorGroup } from "./actions";
@@ -60,6 +61,14 @@ export default async function ErrorsPage({ params, searchParams }: Props) {
     lastSeenAt: g.lastSeenAt.toISOString(),
   }));
 
+  const savedSearchRepo = new PrismaSavedSearchRepository();
+  const savedSearches = await savedSearchRepo.list(params.id, userId);
+  const initialSavedSearches = savedSearches.map((s) => ({
+    id: s.id,
+    name: s.name,
+    filters: s.filters,
+  }));
+
   return (
     <main className="mx-auto max-w-[1280px] px-6 py-12">
       {/* ── Tabs ── */}
@@ -106,6 +115,7 @@ export default async function ErrorsPage({ params, searchParams }: Props) {
           status: toFilterStatus(firstString(searchParams.status)),
           severity: toFilterSeverity(firstString(searchParams.severity)),
         }}
+        initialSavedSearches={initialSavedSearches}
       />
     </main>
   );
