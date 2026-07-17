@@ -3,8 +3,6 @@
 All notable changes to this project are documented here.
 Format follows [Keep a Changelog](https://keepachangelog.com/en/1.1.0/).
 
-## [Unreleased]
-
 ## [1.0.0] - 2026-07-16
 
 ### Added
@@ -24,3 +22,6 @@ Format follows [Keep a Changelog](https://keepachangelog.com/en/1.1.0/).
 - Login/signup page redesign matching the landing page design system.
 - Dashboard shell with sidebar navigation, command palette, and user profile settings.
 - Email notifications via Brevo for critical errors and team invites.
+- Slack webhook notification channel for critical errors and team invitations using a composite notifier.
+- Complete Docker build configuration (`Dockerfile` and `docker-compose.yml`) for development and production environments.
+- CI/CD workflow (`ci.yml`) for automated linting, typechecking, testing, and Docker image build validation.
