@@ -62,3 +62,12 @@ export interface ErrorGroupFilters {
   cursor?: string;
   limit?: number;
 }
+
+export interface SavedSearch {
+  id: string;
+  projectId: string;
+  userId: string;
+  name: string;
+  filters: any;
+  createdAt: Date;
+}
