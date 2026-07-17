@@ -6,6 +6,7 @@ import { IngestionService } from "@/server/services/ingestion.service";
 import { PrismaErrorRepository } from "@/server/repositories/prisma-error.repository";
 import { PrismaProjectRepository } from "@/server/repositories/prisma-project.repository";
 import { EmailNotifier } from "@/server/notifiers/email.notifier";
+import { SlackNotifier, CompositeNotifier } from "@/server/notifiers/slack.notifier";
 import { checkRateLimit } from "@/lib/rate-limit";
 import { env } from "@/lib/env";
 
@@ -36,12 +37,19 @@ export async function POST(req: NextRequest) {
       return NextResponse.json({ error: "Invalid payload", details: parsed.error.flatten() }, { status: 400 });
     }
 
-    const notifier = env.BREVO_API_KEY
-      ? new EmailNotifier(env.BREVO_API_KEY, env.EMAIL_FROM ?? "alerts@errornest.dev", async (project) => {
+    const activeNotifiers = [];
+    if (env.BREVO_API_KEY) {
+      activeNotifiers.push(
+        new EmailNotifier(env.BREVO_API_KEY, env.EMAIL_FROM ?? "alerts@errornest.dev", async (project) => {
           const owner = await db.user.findUnique({ where: { id: project.ownerId } });
           return owner ? [owner.email] : [];
         })
-      : { notifyNewCriticalError: async () => {}, notifyMemberInvited: async () => {} };
+      );
+    }
+    if (env.SLACK_WEBHOOK_URL) {
+      activeNotifiers.push(new SlackNotifier(env.SLACK_WEBHOOK_URL));
+    }
+    const notifier = new CompositeNotifier(activeNotifiers);
 
     const service = new IngestionService(
       new PrismaErrorRepository(),

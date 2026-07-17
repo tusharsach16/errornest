@@ -9,6 +9,7 @@ import {
 } from "@/server/repositories/prisma-project.repository";
 import { RbacService } from "@/server/services/rbac.service";
 import { EmailNotifier } from "@/server/notifiers/email.notifier";
+import { SlackNotifier, CompositeNotifier } from "@/server/notifiers/slack.notifier";
 import type { Role } from "@/server/domain/entities";
 import type { MemberWithUser } from "@/server/domain/repositories";
 
@@ -54,19 +55,29 @@ export async function inviteMemberAction(
     const added = members.find((m) => m.userId === target.id);
     if (!added) return { ok: false, error: "Failed to retrieve new member." };
 
-    // Email failure must not roll back the membership — it's the source of truth.
+    // Notification failure must not roll back the membership — it's the source of truth.
+    const activeNotifiers = [];
     if (env.BREVO_API_KEY) {
-      const project = await db.project.findUnique({ where: { id: projectId } });
-      if (project) {
-        const notifier = new EmailNotifier(
+      activeNotifiers.push(
+        new EmailNotifier(
           env.BREVO_API_KEY,
           env.EMAIL_FROM ?? "alerts@errornest.dev",
-          async () => [],
-        );
+          async () => []
+        )
+      );
+    }
+    if (env.SLACK_WEBHOOK_URL) {
+      activeNotifiers.push(new SlackNotifier(env.SLACK_WEBHOOK_URL));
+    }
+
+    if (activeNotifiers.length > 0) {
+      const project = await db.project.findUnique({ where: { id: projectId } });
+      if (project) {
+        const notifier = new CompositeNotifier(activeNotifiers);
         notifier.notifyMemberInvited(project, target.email, role)
-          .then(() => console.log("[inviteMember] email sent successfully to", target.email))
+          .then(() => console.log("[inviteMember] notifications sent successfully to", target.email))
           .catch((err: unknown) => {
-            console.error("[inviteMember] email send failed:", err);
+            console.error("[inviteMember] notification send failed:", err);
           });
       }
     }

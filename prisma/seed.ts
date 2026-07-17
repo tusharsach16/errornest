@@ -18,6 +18,12 @@ async function main() {
     },
   });
 
+  // Clean up existing demo project to make the seed script idempotent
+  const existingProject = await db.project.findUnique({ where: { slug: "demo-web-app" } });
+  if (existingProject) {
+    await db.project.delete({ where: { id: existingProject.id } });
+  }
+
   const project = await db.project.create({
     data: {
       name: "Demo Web App",

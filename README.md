@@ -18,7 +18,7 @@
 * Search, filter (status/severity/date), and cursor-based pagination
 * Role-based team access (Owner / Admin / Member / Viewer)
 * Resolve / ignore workflow with optimistic UI
-* Email alert on the first occurrence of a new critical error
+* Email and Slack alert on the first occurrence of a new critical error
 
 ## Tech Stack
 
@@ -64,6 +64,7 @@ docker run -p 3000:3000 --env-file .env errornest:latest
 |`NEXTAUTH_URL`|Base URL for Auth.js callbacks|
 |`BREVO_API_KEY`|Email provider key for critical-error and invite alerts|
 |`EMAIL_FROM`|Verified sender address for alert emails|
+|`SLACK_WEBHOOK_URL`|Slack Incoming Webhook URL for channel alerts|
 
 ## Architecture
 
@@ -90,7 +91,7 @@ npm run test:e2e   # playwright
 - [x] Resolve/ignore/reopen actions with optimistic UI
 - [x] Dashboard charts (14-day error volume)
 - [x] Team invite + role management (RBAC-enforced)
-- [ ] Slack notifier (swap-in via `INotifier`)
+- [x] Slack notifier (swap-in via `INotifier`)
 - [ ] Saved search views
 
 ## Screenshots
