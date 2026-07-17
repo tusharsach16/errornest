@@ -92,7 +92,7 @@ npm run test:e2e   # playwright
 - [x] Dashboard charts (14-day error volume)
 - [x] Team invite + role management (RBAC-enforced)
 - [x] Slack notifier (swap-in via `INotifier`)
-- [ ] Saved search views
+- [x] Saved search views
 
 ## Screenshots
 
