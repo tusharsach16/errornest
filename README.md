@@ -35,6 +35,26 @@ npm run db:migrate && npm run db:seed
 npm run dev             # http://localhost:3000
 ```
 
+## Running with Docker
+
+As an alternative to a manual local setup, you can run ErrorNest and a PostgreSQL database using Docker:
+
+1. Copy `.env.example` to `.env` and fill in the values (the default `DATABASE_URL` matches the Docker Postgres container configuration).
+2. Start the app and database services:
+   ```bash
+   docker compose up --build
+   ```
+3. Run the database migrations and seed data from your host machine (with local `node_modules` installed):
+   ```bash
+   npm run db:migrate && npm run db:seed
+   ```
+
+To build and run the production-ready Docker image standalone:
+```bash
+docker build -t errornest:latest .
+docker run -p 3000:3000 --env-file .env errornest:latest
+```
+
 ## Environment Variables
 
 |Variable|Description|
