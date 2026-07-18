@@ -10,7 +10,7 @@ export default function Footer() {
         {/* Links */}
         <nav aria-label="Footer links" className="flex items-center gap-6">
           <a
-            href="https://github.com"
+            href="https://github.com/tusharsach16/errornest"
             target="_blank"
             rel="noopener noreferrer"
             className="transition-all duration-[150ms] ease-out hover:text-ink dark:hover:text-white hover:scale-[1.05] active:scale-[0.97] focus-visible:rounded min-h-[44px] flex items-center motion-reduce:hover:scale-100 motion-reduce:active:scale-100"
