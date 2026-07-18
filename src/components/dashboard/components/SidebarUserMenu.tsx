@@ -48,7 +48,13 @@ export function SidebarUserMenu({
       </button>
 
       {userMenuOpen && (
-        <div className="absolute bottom-full left-0 right-0 mb-2 rounded-[10px] border border-gray-200 dark:border-zinc-800 bg-white dark:bg-zinc-900 p-1 shadow-xl z-50 animate-scale-in">
+        <div
+          className={`absolute z-50 rounded-[10px] border border-gray-200 dark:border-zinc-800 bg-white dark:bg-zinc-900 p-1 shadow-xl animate-scale-in ${
+            collapsed
+              ? "left-full bottom-0 ml-3 w-48"
+              : "bottom-full left-0 right-0 mb-2"
+          }`}
+        >
           <div className="px-3 py-2 text-xs text-zinc-500 dark:text-zinc-400 truncate">
             {userEmail}
           </div>
