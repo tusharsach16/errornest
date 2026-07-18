@@ -7,7 +7,21 @@ import {
   PrismaProjectMemberRepository,
 } from "@/server/repositories/prisma-project.repository";
 import { PrismaErrorRepository } from "@/server/repositories/prisma-error.repository";
-import { OverviewChart } from "./OverviewChart";
+import dynamic from "next/dynamic";
+
+const OverviewChart = dynamic(
+  () => import("./OverviewChart").then((m) => m.OverviewChart),
+  {
+    ssr: false,
+    loading: () => (
+      <div
+        className="h-[220px] animate-pulse rounded-card bg-zinc-900/10 dark:bg-zinc-800/30"
+        aria-busy="true"
+        aria-label="Loading chart"
+      />
+    ),
+  },
+);
 
 interface Props {
   params: { id: string };
