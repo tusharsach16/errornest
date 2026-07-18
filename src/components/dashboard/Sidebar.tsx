@@ -81,30 +81,46 @@ export default function Sidebar({ userName, userEmail }: SidebarProps) {
   const sidebarContent = (
     <div className="flex h-full flex-col">
       <div className="flex items-center gap-3 px-4 py-6">
-        <Link
-          href="/projects"
-          className="flex items-center gap-2.5 transition-all duration-150 hover:opacity-85"
-        >
-          <span className="flex h-9 w-9 shrink-0 items-center justify-center rounded-[10px] bg-gradient-to-br from-indigo-500 to-purple-600 text-white text-sm font-bold select-none shadow-lg shadow-indigo-500/20">
-            E
-          </span>
-          {!collapsed && (
-            <span className="text-base font-bold tracking-tight text-zinc-900 dark:text-zinc-100 whitespace-nowrap overflow-hidden">
-              Error<span className="text-zinc-500 dark:text-zinc-400">Nest</span>
+        {collapsed ? (
+          <button
+            type="button"
+            onClick={toggleCollapsed}
+            aria-label="Expand sidebar"
+            className="group relative flex items-center gap-2.5 transition-all duration-150 hover:opacity-85"
+          >
+            <span className="flex h-9 w-9 shrink-0 items-center justify-center rounded-[10px] bg-gradient-to-br from-indigo-500 to-purple-600 text-white text-sm font-bold select-none shadow-lg shadow-indigo-500/20">
+              E
             </span>
-          )}
-        </Link>
-        <button
-          type="button"
-          onClick={toggleCollapsed}
-          aria-label={collapsed ? "Expand sidebar" : "Collapse sidebar"}
-          className="ml-auto hidden lg:flex h-7 w-7 items-center justify-center rounded-md text-zinc-400 hover:text-zinc-600 dark:hover:text-zinc-300 hover:bg-zinc-100 dark:hover:bg-zinc-800/60 transition-all duration-150"
-        >
-          <svg className={`h-4 w-4 transition-transform duration-250 ${collapsed ? "rotate-180" : ""}`} fill="none" viewBox="0 0 24 24" stroke="currentColor" strokeWidth={2}>
-            <path d="M11 19l-7-7 7-7" />
-            <path d="M17 19l-7-7 7-7" opacity={0.4} />
-          </svg>
-        </button>
+            <span className="pointer-events-none absolute left-full ml-3 top-1/2 -translate-y-1/2 whitespace-nowrap rounded-md bg-zinc-900 dark:bg-zinc-100 px-2.5 py-1 text-xs font-medium text-white dark:text-zinc-900 opacity-0 group-hover:opacity-100 transition-opacity duration-150 shadow-lg z-50">
+              Expand sidebar
+            </span>
+          </button>
+        ) : (
+          <>
+            <Link
+              href="/projects"
+              className="flex items-center gap-2.5 transition-all duration-150 hover:opacity-85"
+            >
+              <span className="flex h-9 w-9 shrink-0 items-center justify-center rounded-[10px] bg-gradient-to-br from-indigo-500 to-purple-600 text-white text-sm font-bold select-none shadow-lg shadow-indigo-500/20">
+                E
+              </span>
+              <span className="text-base font-bold tracking-tight text-zinc-900 dark:text-zinc-100 whitespace-nowrap overflow-hidden">
+                Error<span className="text-zinc-500 dark:text-zinc-400">Nest</span>
+              </span>
+            </Link>
+            <button
+              type="button"
+              onClick={toggleCollapsed}
+              aria-label="Collapse sidebar"
+              className="ml-auto hidden lg:flex h-7 w-7 items-center justify-center rounded-md text-zinc-400 hover:text-zinc-600 dark:hover:text-zinc-300 hover:bg-zinc-100 dark:hover:bg-zinc-800/60 transition-all duration-150"
+            >
+              <svg className="h-4 w-4" fill="none" viewBox="0 0 24 24" stroke="currentColor" strokeWidth={2}>
+                <path d="M11 19l-7-7 7-7" />
+                <path d="M17 19l-7-7 7-7" opacity={0.4} />
+              </svg>
+            </button>
+          </>
+        )}
       </div>
 
       <div className="mx-4 h-px bg-gradient-to-r from-transparent via-zinc-200 dark:via-zinc-800 to-transparent" />
@@ -117,6 +133,7 @@ export default function Sidebar({ userName, userEmail }: SidebarProps) {
 
       <div className="mt-auto space-y-2 px-3 pb-4">
         <div className="mx-1 h-px bg-gradient-to-r from-transparent via-zinc-200 dark:via-zinc-800 to-transparent" />
+
 
         <button
           type="button"
