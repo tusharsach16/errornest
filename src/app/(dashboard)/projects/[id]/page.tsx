@@ -7,6 +7,7 @@ import {
   PrismaProjectMemberRepository,
 } from "@/server/repositories/prisma-project.repository";
 import { PrismaErrorRepository } from "@/server/repositories/prisma-error.repository";
+import { IntegrationOnboarding } from "@/components/dashboard/IntegrationOnboarding";
 import dynamic from "next/dynamic";
 
 const OverviewChart = dynamic(
@@ -158,24 +159,7 @@ export default async function ProjectOverviewPage({ params, searchParams }: Prop
 }
 
 function EmptyState({ projectName }: { projectName: string }) {
-  const snippet = `curl -X POST https://errornest.app/api/errors/ingest \\
-  -H "Content-Type: application/json" \\
-  -H "X-Api-Key: YOUR_API_KEY" \\
-  -d '{"message":"Test error","severity":"ERROR"}'`;
-
-  return (
-    <div className="mt-8 rounded-card border border-dashed border-zinc-200 dark:border-zinc-800 bg-zinc-50 dark:bg-zinc-900/20 px-8 py-12 text-center max-w-xl mx-auto shadow-sm animate-hero" style={{ animationDelay: "60ms" }}>
-      <p className="text-lg font-bold text-zinc-900 dark:text-zinc-100">
-        No errors captured yet for {projectName}
-      </p>
-      <p className="mx-auto mt-2 max-w-sm text-sm text-zinc-600 dark:text-zinc-400">
-        Send your first error using your API key. Here&apos;s a quick curl example:
-      </p>
-      <pre className="mx-auto mt-6 max-w-xl overflow-x-auto rounded-card bg-zinc-950 border border-zinc-800 px-4 py-4 text-left font-mono text-xs leading-relaxed text-zinc-300">
-        {snippet}
-      </pre>
-    </div>
-  );
+  return <IntegrationOnboarding projectName={projectName} />;
 }
 
 const SEVERITY_CLASSES: Record<string, string> = {

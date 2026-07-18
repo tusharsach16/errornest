@@ -1,4 +1,5 @@
 import { useState } from "react";
+import { IntegrationOnboarding } from "@/components/dashboard/IntegrationOnboarding";
 
 export function SkeletonRows() {
   return (
@@ -44,41 +45,7 @@ export function SkeletonRows() {
 }
 
 export function EmptyNoErrors({ projectName }: { projectName: string }) {
-  const [copied, setCopied] = useState(false);
-  const snippet = `curl -X POST https://errornest.app/api/errors/ingest \\
-  -H "Content-Type: application/json" \\
-  -H "X-Api-Key: YOUR_API_KEY" \\
-  -d '{"message":"Test error","severity":"ERROR"}'`;
-
-  const copy = async () => {
-    await navigator.clipboard.writeText(snippet);
-    setCopied(true);
-    setTimeout(() => setCopied(false), 2000);
-  };
-
-  return (
-    <div className="mt-4 rounded-card border border-dashed border-zinc-300 dark:border-zinc-800 bg-zinc-50 dark:bg-zinc-900/20 px-8 py-12 text-center max-w-xl mx-auto shadow-sm animate-hero">
-      <p className="text-lg font-bold text-zinc-900 dark:text-zinc-100">
-        No errors captured yet for {projectName}
-      </p>
-      <p className="mx-auto mt-2 max-w-sm text-sm text-zinc-600 dark:text-zinc-400">
-        Send your first error using your API key. Here&apos;s a quick curl example:
-      </p>
-
-      <div className="relative mx-auto mt-6 max-w-xl text-left">
-        <pre className="overflow-x-auto rounded-card bg-zinc-950 border border-zinc-800 px-4 py-4 font-mono text-xs leading-relaxed text-zinc-300">
-          {snippet}
-        </pre>
-        <button
-          onClick={copy}
-          className="absolute right-3 top-3 rounded-pill bg-zinc-900 dark:bg-zinc-100 text-white dark:text-zinc-950 text-xs font-semibold px-4 py-1.5 transition-all duration-[150ms] hover:bg-black dark:hover:bg-white"
-          style={{ minHeight: "28px" }}
-        >
-          {copied ? "Copied!" : "Copy"}
-        </button>
-      </div>
-    </div>
-  );
+  return <IntegrationOnboarding projectName={projectName} />;
 }
 
 export function EmptyNoMatches({ onReset }: { onReset: () => void }) {
