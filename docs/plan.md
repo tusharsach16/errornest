@@ -1,362 +1,213 @@
-\# ErrorNest — plan.md
+# 🚀 ErrorNest — Project Plan
 
+> **ErrorNest** is a lightweight, self-hosted error-monitoring platform (inspired by Sentry). Client applications send error payloads to ErrorNest using an API key. ErrorNest automatically normalizes, groups, stores, and visualizes these errors on a project-by-project basis, offering role-based access control for team members.
 
+---
 
-> A lightweight error-monitoring platform (Sentry-style). Apps send errors to
+## 🏗️ Technical Stack
 
-> ErrorNest via an API key; ErrorNest groups, stores, and visualizes them per
+- **Framework:** Next.js (App Router)
+- **Language:** TypeScript (Strict Mode)
+- **Database:** PostgreSQL
+- **ORM:** Prisma
+- **Styling:** Tailwind CSS + Vanilla CSS Variables (Dark/Light mode)
+- **Authentication:** Auth.js (Credentials & OAuth)
+- **Charts:** Recharts
+- **Deployment:** Vercel / Docker
 
-> project, with role-based team access.
+---
 
+## 📋 1. User Stories
 
+- **As a New User,** I can sign up with my credentials, receive/verify my email, and log in securely.
+- **As a Project Owner,** I can create projects and generate unique API keys for ingestion.
+- **As a Client Application,** I can `POST` error payloads using an `x-api-key` header to a public ingestion endpoint.
+- **As a Team Member,** I can be invited to projects with specific roles (`OWNER`, `ADMIN`, `MEMBER`, `VIEWER`) controlling my permissions.
+- **As a Dashboard User,** I can:
+  - View overall error volume over time using charts.
+  - Browse a list of error groups sorted by recency or frequency.
+  - Search and filter errors by project, status (`OPEN`, `RESOLVED`, `IGNORED`), severity, and date range.
+  - Save my custom search filters for quick reuse (**Saved Searches**).
+  - Drill down into an error group to inspect its stack traces, browser metadata, context, and individual event occurrences.
+- **As an Admin/Owner,** I can resolve or ignore error groups and manage team members' roles.
+- **As an Owner/Admin,** I can configure email (via Brevo) and Slack alerts to notify the team on new critical errors.
 
-Timebox: 7 days. Stack: Next.js (App Router) + TypeScript (strict) +
+---
 
-PostgreSQL + Prisma + Tailwind + Auth.js + Vercel.
-
-
-
-\---
-
-
-
-\## 1. User Stories
-
-
-
-\- As a \*\*new user\*\*, I can sign up, verify my email, and log in.
-
-\- As a \*\*project owner\*\*, I can create a project and get a unique ingestion
-
-&#x20; API key for it.
-
-\- As \*\*any client app\*\*, I can `POST` an error payload to the ingestion
-
-&#x20; endpoint using that API key.
-
-\- As a \*\*team member\*\*, I can be invited to a project with a role
-
-&#x20; (owner / admin / member / viewer) that controls what I can do.
-
-\- As a \*\*dashboard user\*\*, I can see:
-
-&#x20; - error volume over time (chart)
-
-&#x20; - a list of error groups, sorted by most recent / most frequent
-
-&#x20; - a detail view of one error group showing all individual occurrences
-
-\- As a \*\*dashboard user\*\*, I can search/filter errors by project, status
-
-&#x20; (open/resolved/ignored), severity, and date range.
-
-\- As an \*\*admin/owner\*\*, I can mark an error resolved/ignored, and manage
-
-&#x20; team members' roles.
-
-\- As an \*\*owner\*\*, I get an email when a new \*critical\* error group is
-
-&#x20; first created.
-
-
-
-\## 2. Core Entities \& Data Shapes
-
-
+## 🗄️ 2. Core Entities & Data Shapes
 
 ```
-
-User            id, email, passwordHash, name, emailVerifiedAt, createdAt
-
-Project         id, name, slug, ownerId, createdAt
-
-ApiKey          id, projectId, key (hashed), createdAt, revokedAt?
-
-ProjectMember   id, projectId, userId, role (OWNER|ADMIN|MEMBER|VIEWER)
-
-ErrorGroup      id, projectId, fingerprint (hash), title, firstSeenAt,
-
-&#x20;               lastSeenAt, occurrenceCount, status (OPEN|RESOLVED|IGNORED),
-
-&#x20;               severity (INFO|WARNING|ERROR|CRITICAL)
-
-ErrorEvent      id, errorGroupId, message, stackTrace, browser, url,
-
-&#x20;               userContext (json), createdAt
-
-Notification    id, projectId, errorGroupId, channel (EMAIL), sentAt
-
+  +--------------+          +-------------------+          +-------------+
+  |     User     | <------- |   ProjectMember   | -------> |   Project   |
+  +--------------+          +-------------------+          +-------------+
+         |                                                        |
+         | (Saved searches)                                       |--< ApiKey
+         v                                                        |
+  +--------------+                                                |--< ErrorGroup
+  | SavedSearch  | >----------------------------------------------|         |
+  +--------------+                                                          |--< ErrorEvent
+                                                                            |
+                                                                            └──< Notification
 ```
 
+### Entity Fields
 
-
-\*\*Fingerprinting rule (grouping logic):\*\* hash of `(project, error message
-
-normalized, top stack frame)` → same hash = same `ErrorGroup`, just
-
-increments `occurrenceCount` and appends an `ErrorEvent`.
-
-
-
-\### Edge cases to design for
-
-\- Same error fingerprint arriving in a burst (100 events/sec) — don't do
-
-&#x20; 100 separate writes to `ErrorGroup`; batch-increment.
-
-\- Ingestion with an invalid/revoked API key → 401, don't leak which part
-
-&#x20; failed.
-
-\- Stack trace missing (some errors won't have one) → still group by message.
-
-\- A project with zero errors yet → explicit empty state with "send your
-
-&#x20; first error" instructions + copyable curl example.
-
-\- Deleting a project → cascade-delete its errors/events, but require
-
-&#x20; explicit confirmation typing the project name.
-
-
-
-\---
-
-
-
-\## 3. Architecture — where SOLID actually shows up
-
-
-
-Don't just apply SOLID as a buzzword — apply it where it earns its keep:
-
-\*\*business logic (services) separated from data access (repositories)
-
-separated from delivery (API routes/server actions).\*\* This is what a
-
-reviewer means by "clear module boundaries."
-
-
-
+```text
+User           - id, email, passwordHash, name, company, bio, emailVerifiedAt, createdAt, updatedAt
+Project        - id, name, slug, ownerId, createdAt, deletedAt?
+ApiKey         - id, projectId, keyHash, label, createdAt, revokedAt?
+ProjectMember  - id, projectId, userId, role (OWNER | ADMIN | MEMBER | VIEWER), createdAt
+SavedSearch    - id, projectId, userId, name, filters (JSON), createdAt
+ErrorGroup     - id, projectId, fingerprint (hash), title, status (OPEN | RESOLVED | IGNORED),
+                 severity (INFO | WARNING | ERROR | CRITICAL), occurrenceCount, firstSeenAt, lastSeenAt
+ErrorEvent     - id, errorGroupId, message, stackTrace?, browser?, url?, userContext (JSON)?, createdAt
+Notification   - id, projectId, errorGroupId, channel ("EMAIL" | "SLACK"), sentAt
 ```
 
+### 🧠 Fingerprinting & Grouping Logic
+An incoming error's fingerprint is computed using:
+
+$$\text{hash}(\text{project} + \text{normalizedErrorMessage} + \text{topStackFrameLine})$$
+
+- Identical hashes resolve to the same `ErrorGroup`, incrementing `occurrenceCount` and appending a new `ErrorEvent`.
+- **Edge cases handled:**
+  - Burst arrivals (e.g., 100 events/sec) are batched to avoid DB locks.
+  - Missing stack traces fallback to grouping purely by normalized message content.
+  - Dynamic ID parameters in error messages (e.g., `User 123 not found`) are normalized (e.g., `user # not found`) to prevent group fragmentation.
+
+---
+
+## 🏛️ 3. Architecture & Clean Separation
+
+ErrorNest strictly separates **business logic (services)** from **data access (repositories)** and **delivery (API routes/server actions)** using the dependency inversion principle.
+
+### Ingestion Flow Diagram
+
+```mermaid
+sequenceDiagram
+    autonumber
+    actor SDK as Client SDK / App
+    participant Route as Ingestion API Route
+    participant RL as Rate Limiter
+    participant Svc as Ingestion Service
+    participant Grouping as Grouping Service
+    participant Repo as Error Repository
+    participant Alert as Notifier (Composite)
+
+    SDK->>Route: POST /api/errors/ingest (Payload + API Key)
+    Route->>Route: Validate & Hash API Key
+    alt Invalid Key
+        Route-->>SDK: 401 Unauthorized
+    end
+    Route->>RL: Check Limit (bucket per projectId)
+    alt Rate Limited
+        RL-->>SDK: 429 Too Many Requests
+    end
+    Route->>Svc: ingest(projectId, payload)
+    Svc->>Grouping: fingerprint(payload)
+    Grouping-->>Svc: sha256 fingerprint hash
+    Svc->>Repo: findGroupByFingerprint(projectId, fingerprint)
+    alt New Error Group
+        Svc->>Repo: createGroup(projectId, fingerprint, title, severity)
+        Svc->>Repo: appendEvent(groupId, message, stack, browser)
+        opt Severity is CRITICAL
+            Svc->>Alert: notifyNewCriticalError(project, group)
+            Alert-->>Svc: Notify Slack & Email
+        end
+    else Existing Error Group
+        Svc->>Repo: incrementGroup(groupId)
+        Svc->>Repo: appendEvent(groupId, message, stack, browser)
+    end
+    Svc-->>Route: Return Group Info
+    Route-->>SDK: 202 Accepted (groupId)
+```
+
+### 📁 Codebase Directory Structure
+
+```text
 src/
-
-├── app/                        # routes only — thin, no business logic
-
-│   ├── api/errors/ingest/route.ts
-
-│   ├── (dashboard)/projects/\[id]/page.tsx
-
-│   └── ...
-
+├── app/                         # Routing Layer: Lean Next.js pages & endpoints
+│   ├── (auth)/                  # Authentication (login, signup, verify-email)
+│   ├── (dashboard)/             # Project management and analytics views
+│   │   ├── projects/
+│   │   │   └── [id]/
+│   │   │       ├── errors/      # Error listings, detail views, and saved searches
+│   │   │       └── team/        # Member management and role settings
+│   └── api/
+│       └── errors/
+│           └── ingest/
+│               └── route.ts     # Public endpoint for ingesting error events
 ├── server/
-
-│   ├── domain/                 # pure types \& interfaces (no framework code)
-
-│   │   ├── entities.ts         # ErrorGroup, ErrorEvent, Project types
-
-│   │   └── repositories.ts     # IErrorRepository, IProjectRepository (interfaces)
-
-│   ├── repositories/           # Prisma implementations of the interfaces
-
+│   ├── domain/                  # Core Business Domains (Framework-free)
+│   │   ├── entities.ts          # Pure domain models and TypeScript interfaces
+│   │   └── repositories.ts      # Repository interface definitions (IErrorRepository, etc.)
+│   ├── repositories/            # Data Access: Concrete Prisma database implementations
+│   │   ├── prisma-api-key.repository.ts
 │   │   ├── prisma-error.repository.ts
-
-│   │   └── prisma-project.repository.ts
-
-│   ├── services/                # business logic, depends on interfaces only
-
-│   │   ├── ingestion.service.ts    # dedupe + fingerprint + persist
-
-│   │   ├── grouping.service.ts     # fingerprint algorithm (swappable)
-
-│   │   ├── notification.service.ts # depends on INotifier interface
-
-│   │   └── auth.service.ts
-
-│   ├── notifiers/               # strategy pattern for alert channels
-
-│   │   ├── email.notifier.ts    # implements INotifier
-
-│   │   └── (future) slack.notifier.ts
-
-│   └── lib/                     # db client, auth config, env validation
-
-└── components/
-
+│   │   ├── prisma-project.repository.ts
+│   │   └── prisma-saved-search.repository.ts
+│   ├── services/                # Business Logic Services (depends only on interfaces)
+│   │   ├── grouping.service.ts  # Normalized error fingerprint calculation
+│   │   ├── ingestion.service.ts # Ingests, hashes, dedupes, and alerts on errors
+│   │   ├── project.service.ts   # Project creation and verification flow
+│   │   └── rbac.service.ts      # Enforces role permissions (assertRole)
+│   └── notifiers/               # Alert channels (implementing INotifier interface)
+│       ├── notifier.interface.ts
+│       ├── email.notifier.ts    # Sends emails via Brevo SMTP API
+│       └── slack.notifier.ts    # Posts formatted alerts to Slack Webhook channels
+├── components/                  # Shared UI components (Charts, Buttons, Toasts)
+└── lib/                         # Generic Utilities (db client, rate limit, env validation)
 ```
 
-
-
-\*\*How each SOLID principle maps to this:\*\*
-
-
-
-\- \*\*S — Single Responsibility.\*\* `ingestion.service.ts` only decides \*what
-
-&#x20; to store\*; `grouping.service.ts` only decides \*how to fingerprint\*;
-
-&#x20; `prisma-error.repository.ts` only knows \*how to talk to Postgres\*. Each
-
-&#x20; file has one reason to change.
-
-\- \*\*O — Open/Closed.\*\* `notification.service.ts` depends on an `INotifier`
-
-&#x20; interface. Adding Slack alerts later = add `slack.notifier.ts`, zero
-
-&#x20; changes to existing code.
-
-\- \*\*L — Liskov Substitution.\*\* Any class implementing `IErrorRepository`
-
-&#x20; (Prisma today, maybe a test in-memory repo tomorrow) must be swappable
-
-&#x20; without breaking `ingestion.service.ts`. This is also what makes the
-
-&#x20; service layer unit-testable without a real database.
-
-\- \*\*I — Interface Segregation.\*\* Don't have one giant `IRepository`. Split
-
-&#x20; `IErrorRepository`, `IProjectRepository`, `IUserRepository` — a service
-
-&#x20; only depends on the slice it actually needs.
-
-\- \*\*D — Dependency Inversion.\*\* Services take repositories/notifiers as
-
-&#x20; constructor params (interfaces), not concrete Prisma imports. Wire the
-
-&#x20; concrete implementations once, at the route/server-action boundary
-
-&#x20; (poor-man's DI — no need for a DI framework at this scale).
-
-
-
-This structure is also \*why\* it scales well later: swapping Postgres
-
-partitioning, adding a queue, or adding Redis caching only touches the
-
-`repositories/` layer — services and routes don't change.
-
-
-
-\---
-
-
-
-\## 4. Scalability notes (design for it, don't over-build it now)
-
-
-
-\- \*\*Indexes:\*\* composite index on `(projectId, fingerprint)` for grouping
-
-&#x20; lookups; index on `(projectId, status, lastSeenAt)` for the dashboard
-
-&#x20; list query.
-
-\- \*\*Pagination:\*\* cursor-based on `ErrorEvent`/`ErrorGroup` lists (not
-
-&#x20; offset) — offset degrades past \~10k rows per the handbook's own guidance.
-
-\- \*\*Ingestion writes:\*\* keep the ingestion service's `persist()` method
-
-&#x20; behind the `IErrorRepository` interface \*now\*, so if volume ever needs a
-
-&#x20; queue (BullMQ+Redis) later, you swap the implementation, not the caller.
-
-&#x20; Don't build the queue this week — just don't paint yourself into a
-
-&#x20; corner.
-
-\- \*\*Read/write split conceptually:\*\* dashboard reads are aggregate-heavy
-
-&#x20; (counts, trends) — consider a lightweight materialized `dailyCount`
-
-&#x20; rollup table updated on write, so charts don't scan raw events.
-
-\- \*\*Rate limiting:\*\* token-bucket on the ingestion endpoint per API key,
-
-&#x20; in-memory Map is fine for this scale (documented as a "swap for Redis at
-
-&#x20; scale" comment).
-
-
-
-\---
-
-
-
-\## 5. API / Server Actions Surface
-
-
-
-| Action | Method | Auth | Notes |
-
-|---|---|---|---|
-
-| Ingest error | POST `/api/errors/ingest` | API key header | public-facing, rate-limited |
-
-| List projects | server action | session | scoped to membership |
-
-| Create project | server action | session | generates API key |
-
-| List error groups | server action | session + role | filters: status, severity, date |
-
-| Get error group detail | server action | session + role | includes paginated events |
-
-| Resolve/ignore error | server action | session + role >= MEMBER | |
-
-| Invite member | server action | session + role >= ADMIN | |
-
-| Update member role | server action | session + role == OWNER | |
-
-
-
-\---
-
-
-
-\## 6. Day-by-Day Plan (7 days, intense)
-
-
-
-| Day | Deliverable |
-
-|---|---|
-
-| \*\*1\*\* | Repo + CI skeleton, deploy hello-world to Vercel. Prisma schema (section 2) + migration. Domain interfaces (`IErrorRepository`, `IProjectRepository`). Auth.js wired (signup/login/email verify). |
-
-| \*\*2\*\* | Project CRUD (create project → generate API key). `prisma-project.repository.ts` + `project.service.ts`. Dashboard shell + nav (empty states designed first). |
-
-| \*\*3\*\* | Ingestion endpoint: API key validation → `grouping.service.ts` (fingerprinting) → `ingestion.service.ts` → `prisma-error.repository.ts`. Write a seed/simulate script to fire fake errors for demo data. |
-
-| \*\*4\*\* | Error list view: search/filter/sort/cursor-pagination, all 4 states (loading/empty/error/success). Error detail view with occurrence list. |
-
-| \*\*5\*\* | Dashboard charts (volume over time, top groups) with Recharts. Resolve/ignore actions with optimistic UI + toast. |
-
-| \*\*6\*\* | RBAC (ProjectMember roles enforced server-side in every action), team invite flow. Email notification on new critical error (`email.notifier.ts` implementing `INotifier`). Design polish pass (spacing/contrast/focus states). |
-
-| \*\*7\*\* | SEO (meta/OG/sitemap/robots), mobile responsiveness + a11y pass, README + `docs/architecture.md` (explain the SOLID layering), CHANGELOG, LICENSE, record Loom demo, write case study, final QA, submit. |
-
-
-
-\---
-
-
-
-\## 7. Open Questions / Assumptions
-
-
-
-\- Ingestion payload shape: assume `{ message, stackTrace?, severity?, url?,
-
-&#x20; browser?, userContext? }` — confirm/adjust once you pick a "client SDK"
-
-&#x20; stub format.
-
-\- No real client apps will send errors — a seed script simulating realistic
-
-&#x20; bursts is enough for the demo and grading.
-
-\- Email via Brevo (formerly Sendinblue); swap-friendly since it's behind
-
-&#x20; `INotifier`.
-
+> [!TIP]
+> **Why this split matters:**
+> - **S (Single Responsibility):** Each class does exactly one thing. Swapping Prisma for another ORM or database only requires changing the files under `server/repositories/`.
+> - **O (Open/Closed):** To support another alert channel (e.g., Discord or Webhooks), we just implement `INotifier` in a new file under `server/notifiers/` without modifying `IngestionService`.
+> - **D (Dependency Inversion):** Services never import Prisma directly; they rely on abstract repository parameters, enabling offline unit testing using mock/in-memory repositories.
+
+---
+
+## 📈 4. Scalability & Optimization Choices
+
+- **Indices:** Compound index on `(projectId, fingerprint)` speeds up grouping lookups. A composite index on `(projectId, status, lastSeenAt)` optimizes dashboard queries.
+- **Cursor Pagination:** Avoids SQL `OFFSET` performance degradation under large record sizes (>10k errors).
+- **Composite Alerts:** Alerts on new `CRITICAL` error groups are routed through a `CompositeNotifier` to dispatch emails and Slack webhook payloads concurrently.
+- **Materialized Trends:** Historical trend lines are built on aggregated counts to avoid scanning millions of raw event rows during dashboard loads.
+- **In-Memory Rate Limiting:** A memory-efficient token-bucket implementation is utilized for local development; it is designed to be easily swapped for Redis in cluster environments.
+
+---
+
+## 🔌 5. API & Server Actions Surface
+
+| Action / Endpoint | Method | Authentication | Notes |
+| :--- | :--- | :--- | :--- |
+| **Ingest Error** | `POST /api/errors/ingest` | API Key (`x-api-key`) | Rate-limited, public endpoint |
+| **List Projects** | Server Action | Auth Session Cookie | Scope restricted to active memberships |
+| **Create Project** | Server Action | Auth Session Cookie | Automatically creates default API key |
+| **List Error Groups** | Server Action | Auth Session Cookie + RBAC | Filters: status, severity, query, saved searches |
+| **Get Group Details** | Server Action | Auth Session Cookie + RBAC | Includes paginated child occurrences |
+| **Update Group Status**| Server Action | Session + Role $\ge$ `MEMBER` | Marks as OPEN, RESOLVED, or IGNORED |
+| **Invite Team Member** | Server Action | Session + Role $\ge$ `ADMIN` | Dispatches invitation email notifier |
+| **Update Member Role** | Server Action | Session + Role $=$ `OWNER` | Upgrades/downgrades member permissions |
+
+---
+
+## 📅 6. Day-by-Day Development Plan
+
+| Day | Focus / Deliverable | Key Details |
+| :---: | :--- | :--- |
+| **Day 1** | **Base Scaffold & DB Setup** | Git CI pipeline configured. Prisma schema and seed scripts established. Domain interface layers defined. Auth.js wired. |
+| **Day 2** | **Project Management** | Project CRUD operations. Key creation & hashing functions. Core navigation layout and dashboard shell. |
+| **Day 3** | **Ingestion Pipeline** | API key routing. Ingest service & normalization. Grouping engine. Local simulation scripts to populate fake errors. |
+| **Day 4** | **Error Explorer** | Error grid tables. Filters, search inputs, saved searches. Cursor pagination. Error occurrence details view. |
+| **Day 5** | **Insights & Actions** | Recharts integration for error trend charts. Status transitions with optimistic updates and toasts. |
+| **Day 6** | **RBAC & Notifiers** | Role-based authorization assertions. Team invitation forms. Brevo + Slack webhooks integrated for alerts. |
+| **Day 7** | **Polish & Handover** | SEO configuration. CSS variable theme checks. Accessibility and responsive design. Walkthrough and Loom demo documentation. |
+
+---
+
+## 💬 7. Assumptions & Constraints
+
+1. **Emailing:** Brevo SMTP configuration relies on valid environment variable keys. Emails will gracefully bypass if key variables are missing.
+2. **Mock Agent:** Errors will be simulated using a seeding CLI script since there is no actual Client SDK bundle compiled for this timebox.
+3. **RBAC Rule:** Project security acts at the backend level. Front-end components hide control panels matching user roles, but all actions perform a secondary DB validation check via `RbacService`.
