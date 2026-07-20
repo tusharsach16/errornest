@@ -34,9 +34,9 @@ The completed project, deployed live at **https://errornest.vercel.app**, includ
 - **Authentication & RBAC:** Multi-tenant credential auth and server-enforced role-based access control (Owner, Admin, Member, Viewer) for teams.
 - **Error Ingestion & Grouping:** Real-time ingestion endpoint with hashed API keys, in-memory rate-limiting, and fingerprint-based error grouping.
 - **Dashboard & Workflows:** Dynamic dashboard with 14-day error volume charts, resolve/ignore workflows using optimistic UI, search filters, and cursor-based pagination.
-- **Alerts & Collaboration:** Real-time client polling for team members, and transactional email notifications via Brevo for critical errors and invites.
+- **Alerts & Collaboration:** Real-time client polling for team members, transactional email notifications via Brevo, and Slack Webhook notifications for critical errors and invites.
 
-Next, we plan to implement a Slack notifier by adding a new implementation of `INotifier`, add saved search views, and enforce user email verification.
+Next, we plan to enforce user email verification and implement automated cleanup of older resolved errors.
 
 ## 4. What I Learned
 Working with an AI pair programmer at this scale highlighted the value of structured boundaries. Specifying interfaces in `src/server/domain/repositories.ts` before starting code generation kept logic clean and prevented the model from outputting bloated, monolithic files. 

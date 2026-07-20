@@ -4,10 +4,12 @@
 
 ```
 User ──< ProjectMember >── Project ──< ApiKey
-                               │
-                               └──< ErrorGroup ──< ErrorEvent
-                               │
-                               └──< Notification
+  │                            │
+  │                            ├──< ErrorGroup ──< ErrorEvent
+  │                            │
+  │                            ├──< Notification
+  │                            │
+  └──< SavedSearch >───────────┘
 ```
 
 - A `User` can belong to many `Project`s via `ProjectMember` (role: OWNER /
@@ -17,6 +19,7 @@ User ──< ProjectMember >── Project ──< ApiKey
 - Incoming errors are grouped into `ErrorGroup`s by a content fingerprint;
   each individual occurrence is an `ErrorEvent` under that group.
 - `Notification` records when an alert was sent, to avoid duplicate emails.
+- `SavedSearch` stores custom dashboard filters configured by a `User` for a `Project` for quick reuse.
 
 ## Auth & authorization
 
