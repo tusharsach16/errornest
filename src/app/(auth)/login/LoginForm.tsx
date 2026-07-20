@@ -5,12 +5,19 @@ import { useState, useTransition } from "react";
 import { useSearchParams } from "next/navigation";
 import { signIn } from "next-auth/react";
 import { loginSchema } from "@/lib/validators/auth.validators";
+import { OAuthButtons, OAuthDivider } from "../components/OAuthButtons";
 
 type FieldErrors = Partial<Record<"email" | "password", string>>;
+
+const OAUTH_ERROR_MESSAGES: Record<string, string> = {
+  OAuthAccountNotLinked:
+    "An account with this email already exists. Sign in with your original method, then link this provider from settings.",
+};
 
 export function LoginForm() {
   const searchParams = useSearchParams();
   const justCreated = searchParams.get("created") === "1";
+  const oauthError = searchParams.get("error");
 
   const [fieldErrors, setFieldErrors] = useState<FieldErrors>({});
   const [formError, setFormError] = useState<string | null>(null);
@@ -50,6 +57,8 @@ export function LoginForm() {
     });
   }
 
+  const oauthErrorMessage = oauthError ? OAUTH_ERROR_MESSAGES[oauthError] : null;
+
   return (
     <div className="w-full space-y-6">
       <div>
@@ -73,15 +82,24 @@ export function LoginForm() {
         </p>
       )}
 
+      {oauthErrorMessage && (
+        <p role="alert" className="rounded-input border border-amber-200 dark:border-amber-900/50 bg-amber-50 dark:bg-amber-950/30 px-4 py-3 text-sm text-amber-800 dark:text-amber-300">
+          {oauthErrorMessage}
+        </p>
+      )}
+
       {formError && (
         <p role="alert" className="rounded-input border border-red-200 dark:border-red-900/50 bg-red-50 dark:bg-red-950/30 px-4 py-3 text-sm text-red-800 dark:text-red-300">
           {formError}
         </p>
       )}
 
+      <OAuthButtons />
+      <OAuthDivider />
+
       <form onSubmit={handleSubmit} noValidate className="space-y-6">
         <Field
-          id="email"
+          id="login-email"
           label="Email address"
           type="email"
           name="email"
@@ -89,7 +107,7 @@ export function LoginForm() {
           error={fieldErrors.email}
         />
         <Field
-          id="password"
+          id="login-password"
           label="Password"
           type="password"
           name="password"
@@ -102,6 +120,7 @@ export function LoginForm() {
           disabled={isPending}
           aria-busy={isPending}
           className="flex w-full items-center justify-center gap-2 rounded-pill bg-zinc-900 dark:bg-zinc-100 px-4 py-3 text-sm font-semibold text-white dark:text-zinc-950 shadow-sm transition-all duration-[150ms] ease-out hover:bg-black dark:hover:bg-white hover:scale-[1.02] active:scale-[0.98] focus-visible:rounded-pill disabled:opacity-60 motion-reduce:hover:scale-100 motion-reduce:active:scale-100"
+          style={{ minHeight: "44px" }}
         >
           {isPending && <Spinner />}
           {isPending ? "Signing in…" : "Sign in"}
