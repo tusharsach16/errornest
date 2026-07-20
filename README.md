@@ -8,8 +8,6 @@
 
 **Live demo → https://errornest.vercel.app**
 
-> Built as part of the Digital Heroes Full Stack Developer Trial.
-
 ## Features
 
 * Multi-project support with per-project API keys
