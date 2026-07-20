@@ -5,9 +5,9 @@
 ```
 User ──< ProjectMember >── Project ──< ApiKey
   │                            │
-  │                            ├──< ErrorGroup ──< ErrorEvent
+  ├──< Account                 ├──< ErrorGroup ──< ErrorEvent
   │                            │
-  │                            ├──< Notification
+  ├──< Session                 ├──< Notification
   │                            │
   └──< SavedSearch >───────────┘
 ```
@@ -20,11 +20,20 @@ User ──< ProjectMember >── Project ──< ApiKey
   each individual occurrence is an `ErrorEvent` under that group.
 - `Notification` records when an alert was sent, to avoid duplicate emails.
 - `SavedSearch` stores custom dashboard filters configured by a `User` for a `Project` for quick reuse.
+- `Account` links OAuth provider identities (Google, GitHub) to a `User` via the NextAuth Prisma adapter.
+- `Session` stores database-backed sessions (required by the adapter, though the app uses JWT strategy).
 
 ## Auth & authorization
 
-Sessions are handled by Auth.js (credentials + optional OAuth), stored in
-httpOnly cookies. Every mutating server action starts by calling
+Sessions are handled by Auth.js (credentials + Google/GitHub OAuth), stored as
+JWTs in httpOnly cookies. OAuth providers use the NextAuth Prisma adapter to
+persist linked `Account` records; the `User.passwordHash` field is optional so
+OAuth-only users can exist without a password. When a user attempts OAuth sign-in
+with an email that already has a credentials account, NextAuth returns an
+`OAuthAccountNotLinked` error rather than silently merging — this is the secure
+default to prevent account takeover via unverified OAuth emails.
+
+Every mutating server action starts by calling
 `RbacService.assertRole(projectId, userId, minRole)`, which looks up the
 caller's `ProjectMember` role server-side — the client-sent role, if any, is
 never trusted. Ingestion requests use a separate auth path: a hashed API

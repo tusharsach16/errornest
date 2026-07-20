@@ -17,6 +17,7 @@
 * Role-based team access (Owner / Admin / Member / Viewer)
 * Resolve / ignore workflow with optimistic UI
 * Email and Slack alert on the first occurrence of a new critical error
+* Google and GitHub OAuth sign-in alongside email/password credentials
 
 ## Tech Stack
 
@@ -63,6 +64,10 @@ docker run -p 3000:3000 --env-file .env errornest:latest
 |`BREVO_API_KEY`|Email provider key for critical-error and invite alerts|
 |`EMAIL_FROM`|Verified sender address for alert emails|
 |`SLACK_WEBHOOK_URL`|Slack Incoming Webhook URL for channel alerts|
+|`GOOGLE_CLIENT_ID`|Google OAuth client ID ([Cloud Console](https://console.cloud.google.com/apis/credentials))|
+|`GOOGLE_CLIENT_SECRET`|Google OAuth client secret|
+|`GITHUB_CLIENT_ID`|GitHub OAuth client ID ([Developer Settings](https://github.com/settings/developers))|
+|`GITHUB_CLIENT_SECRET`|GitHub OAuth client secret|
 
 ## Architecture
 
@@ -91,6 +96,7 @@ npm run test:e2e   # playwright
 - [x] Team invite + role management (RBAC-enforced)
 - [x] Slack notifier (swap-in via `INotifier`)
 - [x] Saved search views
+- [x] Google and GitHub OAuth (NextAuth Prisma adapter)
 
 ## Screenshots
 

@@ -3,6 +3,19 @@
 All notable changes to this project are documented here.
 Format follows [Keep a Changelog](https://keepachangelog.com/en/1.1.0/).
 
+## [1.2.0] - 2026-07-20
+
+### Added
+- Google and GitHub OAuth sign-in via NextAuth providers, alongside existing email/password credentials.
+- Prisma adapter integration with new `Account`, `Session`, and `VerificationToken` models for OAuth identity linking.
+- "Continue with Google" and "Continue with GitHub" buttons on login and signup pages with inline SVG logos.
+- Friendly error handling for the `OAuthAccountNotLinked` edge case (same email, different provider).
+- Zod-validated optional env vars for `GOOGLE_CLIENT_ID`, `GOOGLE_CLIENT_SECRET`, `GITHUB_CLIENT_ID`, `GITHUB_CLIENT_SECRET`.
+
+### Changed
+- `User.passwordHash` is now optional to support OAuth-only accounts.
+- Password-change action guards against null `passwordHash` for OAuth users.
+
 ## [1.1.0] - 2026-07-17
 
 ## [1.0.0] - 2026-07-16
