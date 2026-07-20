@@ -59,7 +59,7 @@ export async function changePasswordAction(
       select: { passwordHash: true },
     });
 
-    if (!user) {
+    if (!user?.passwordHash) {
       return { ok: false, error: "Unable to complete password change." };
     }
 
