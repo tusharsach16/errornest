@@ -4,6 +4,7 @@ import Link from "next/link";
 import { useFormState, useFormStatus } from "react-dom";
 import { signupAction } from "../actions/signup";
 import type { SignupState } from "../actions/signup";
+import { OAuthButtons, OAuthDivider } from "../components/OAuthButtons";
 
 const initialState: SignupState = {};
 
@@ -33,9 +34,12 @@ export function SignupForm() {
         </p>
       )}
 
+      <OAuthButtons />
+      <OAuthDivider />
+
       <form action={dispatch} noValidate className="space-y-6">
         <Field
-          id="name"
+          id="signup-name"
           label="Full name"
           type="text"
           name="name"
@@ -43,7 +47,7 @@ export function SignupForm() {
           error={state.fieldErrors?.name}
         />
         <Field
-          id="email"
+          id="signup-email"
           label="Email address"
           type="email"
           name="email"
@@ -51,7 +55,7 @@ export function SignupForm() {
           error={state.fieldErrors?.email}
         />
         <Field
-          id="password"
+          id="signup-password"
           label="Password"
           type="password"
           name="password"
@@ -140,6 +144,7 @@ function SubmitButton() {
       disabled={pending}
       aria-busy={pending}
       className="flex w-full items-center justify-center gap-2 rounded-pill bg-zinc-900 dark:bg-zinc-100 px-4 py-3 text-sm font-semibold text-white dark:text-zinc-950 shadow-sm transition-all duration-[150ms] ease-out hover:bg-black dark:hover:bg-white hover:scale-[1.02] active:scale-[0.98] focus-visible:rounded-pill disabled:opacity-60 motion-reduce:hover:scale-100 motion-reduce:active:scale-100"
+      style={{ minHeight: "44px" }}
     >
       {pending && <Spinner />}
       {pending ? "Creating account…" : "Create account"}

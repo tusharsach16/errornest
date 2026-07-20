@@ -31,12 +31,15 @@ We used an AI-assisted workflow with Claude in Antigravity. Adopting a spec-firs
 
 ## 3. Result
 The completed project, deployed live at **https://errornest.vercel.app**, includes:
-- **Authentication & RBAC:** Multi-tenant credential auth and server-enforced role-based access control (Owner, Admin, Member, Viewer) for teams.
+- **Authentication & RBAC:** Multi-tenant auth supporting both email/password credentials and Google/GitHub OAuth (via the NextAuth Prisma adapter), with server-enforced role-based access control (Owner, Admin, Member, Viewer) for teams.
 - **Error Ingestion & Grouping:** Real-time ingestion endpoint with hashed API keys, in-memory rate-limiting, and fingerprint-based error grouping.
 - **Dashboard & Workflows:** Dynamic dashboard with 14-day error volume charts, resolve/ignore workflows using optimistic UI, search filters, and cursor-based pagination.
 - **Alerts & Collaboration:** Real-time client polling for team members, transactional email notifications via Brevo, and Slack Webhook notifications for critical errors and invites.
 
 Next, we plan to enforce user email verification and implement automated cleanup of older resolved errors.
+
+### OAuth Integration
+Adding Google and GitHub as secondary authentication providers required the NextAuth Prisma adapter and three new database models (`Account`, `Session`, `VerificationToken`). A key design choice was making `passwordHash` optional on the `User` model so OAuth-only users can exist without a password. The OAuth providers are conditionally registered — they only activate when their env vars are set, keeping the dev experience frictionless for contributors who don't need OAuth locally.
 
 ## 4. What I Learned
 Working with an AI pair programmer at this scale highlighted the value of structured boundaries. Specifying interfaces in `src/server/domain/repositories.ts` before starting code generation kept logic clean and prevented the model from outputting bloated, monolithic files. 
@@ -44,3 +47,5 @@ Working with an AI pair programmer at this scale highlighted the value of struct
 Strict typing also caught structural issues early: Prisma's `JsonValue` return type for the `userContext` column in `schema.prisma` is a union including primitives, which caused compiler errors when assigned to our domain's `Record<string, unknown>` type. We resolved this by explicitly checking the type runtime in `prisma-error.repository.ts`, preventing potential serialization issues.
 
 We also encountered the frustration of silently-invalid Tailwind classes, which fail to compile but don't throw runtime errors, teaching us to stick strictly to standard utilities. Finally, testing the Brevo integration revealed that transactional email delivery depends heavily on matching a verified sender domain in `EMAIL_FROM`, underscoring that third-party integrations require robust runtime error logging even when local unit tests pass.
+
+The OAuth integration surfaced an important security edge case: when a user signs up with email/password and later tries "Continue with Google" with the same email, NextAuth v4 raises an `OAuthAccountNotLinked` error rather than silently merging accounts. This is the correct secure default — auto-linking could enable account takeover if the OAuth provider doesn't verify email ownership — but it required explicit UX handling (a clear error message directing the user to sign in with their original method) to avoid confusing end users.

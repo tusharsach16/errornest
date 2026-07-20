@@ -11,7 +11,7 @@
 - **Database:** PostgreSQL
 - **ORM:** Prisma
 - **Styling:** Tailwind CSS + Vanilla CSS Variables (Dark/Light mode)
-- **Authentication:** Auth.js (Credentials & OAuth)
+- **Authentication:** Auth.js (Credentials & Google/GitHub OAuth via Prisma Adapter)
 - **Charts:** Recharts
 - **Deployment:** Vercel / Docker
 
@@ -19,7 +19,7 @@
 
 ## 📋 1. User Stories
 
-- **As a New User,** I can sign up with my credentials, receive/verify my email, and log in securely.
+- **As a New User,** I can sign up with my credentials or continue with Google/GitHub OAuth, and log in securely.
 - **As a Project Owner,** I can create projects and generate unique API keys for ingestion.
 - **As a Client Application,** I can `POST` error payloads using an `x-api-key` header to a public ingestion endpoint.
 - **As a Team Member,** I can be invited to projects with specific roles (`OWNER`, `ADMIN`, `MEMBER`, `VIEWER`) controlling my permissions.
@@ -53,7 +53,10 @@
 ### Entity Fields
 
 ```text
-User           - id, email, passwordHash, name, company, bio, emailVerifiedAt, createdAt, updatedAt
+User           - id, email, passwordHash?, name, image?, company, bio, emailVerified?, emailVerifiedAt?, createdAt, updatedAt
+Account        - id, userId, type, provider, providerAccountId, refresh_token?, access_token?, expires_at?, token_type?, scope?, id_token?, session_state?
+Session        - id, sessionToken, userId, expires
+VerificationToken - identifier, token, expires
 Project        - id, name, slug, ownerId, createdAt, deletedAt?
 ApiKey         - id, projectId, keyHash, label, createdAt, revokedAt?
 ProjectMember  - id, projectId, userId, role (OWNER | ADMIN | MEMBER | VIEWER), createdAt

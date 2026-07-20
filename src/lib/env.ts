@@ -7,6 +7,10 @@ const envSchema = z.object({
   EMAIL_FROM: z.string().email().optional(),
   NEXTAUTH_URL: z.string().url().optional(),
   SLACK_WEBHOOK_URL: z.string().url().optional(),
+  GOOGLE_CLIENT_ID: z.string().min(1).optional(),
+  GOOGLE_CLIENT_SECRET: z.string().min(1).optional(),
+  GITHUB_CLIENT_ID: z.string().min(1).optional(),
+  GITHUB_CLIENT_SECRET: z.string().min(1).optional(),
 });
 
 // Fail fast at boot if required env vars are missing/malformed, instead of
