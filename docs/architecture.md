@@ -39,6 +39,18 @@ caller's `ProjectMember` role server-side — the client-sent role, if any, is
 never trusted. Ingestion requests use a separate auth path: a hashed API
 key, checked in the route handler before any service code runs.
 
+## Where things live
+
+| Layer | Location |
+|---|---|
+| Domain interfaces | `src/server/domain/` |
+| Repository implementations | `src/server/repositories/` |
+| Business logic (services) | `src/server/services/` |
+| Notification channels | `src/server/notifiers/` |
+| API routes | `src/app/api/` |
+| Dashboard pages | `src/app/(dashboard)/` |
+| Auth pages | `src/app/(auth)/` |
+
 ## Why the service/repository split
 
 Services (`src/server/services/`) contain business logic and depend only on
